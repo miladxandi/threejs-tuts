@@ -458,6 +458,37 @@
         .card:nth-child(8) { animation-delay: 0.45s; }
         .card:nth-child(9) { animation-delay: 0.5s; }
         .card:nth-child(10) { animation-delay: 0.55s; }
+        .card:nth-child(11) { animation-delay: 0.6s; }
+
+        /* Special Final Card */
+        .card.special {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .card.special .card-preview {
+            height: 250px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .card.special::before {
+            opacity: 1;
+            background: linear-gradient(90deg, #6366f1, #ec4899, #6366f1);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 900px) {
+            .card.special {
+                grid-column: span 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -478,7 +509,7 @@
         
         <div class="stats-bar">
             <div class="stat-item">
-                <div class="stat-number">۱۰</div>
+                <div class="stat-number">۱۱</div>
                 <div class="stat-label">پروژه تعاملی</div>
             </div>
             <div class="stat-item">
@@ -761,6 +792,35 @@
                         <span class="tag">مدل‌سازی</span>
                         <span class="tag">پرچم</span>
                         <span class="tag">انیمیشن</span>
+                    </div>
+                </div>
+                <div class="card-arrow">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"></path></svg>
+                </div>
+            </a>
+
+            <!-- Final Card - Special -->
+            <a href="final.html" class="card special">
+                <div class="card-preview">
+                    <div class="shapes">
+                        <div class="shape" style="width: 80px; height: 80px; top: 20%; left: 20%;"></div>
+                        <div class="shape" style="width: 60px; height: 60px; top: 50%; left: 50%; animation-delay: -1s;"></div>
+                        <div class="shape" style="width: 50px; height: 50px; top: 30%; left: 70%; animation-delay: -2s;"></div>
+                    </div>
+                    <span class="card-preview-icon">🚀</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-number" style="background: linear-gradient(135deg, #6366f1, #ec4899);">⭐</span>
+                    <h3 class="card-title">پروژه نهایی - وب‌سایت سه‌بعدی</h3>
+                    <p class="card-description">
+                        ترکیب تمام مفاهیم در یک وب‌سایت کامل! اشکال سه‌بعدی تعاملی که با اسکرول و ماوس حرکت می‌کنند. 
+                        یک تجربه کاملاً immersive با بخش‌های Hero، Features، Gallery و Contact.
+                    </p>
+                    <div class="card-tags">
+                        <span class="tag">پروژه نهایی</span>
+                        <span class="tag">Scroll Animation</span>
+                        <span class="tag">Interactive 3D</span>
+                        <span class="tag">Full Website</span>
                     </div>
                 </div>
                 <div class="card-arrow">
