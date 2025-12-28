@@ -392,15 +392,24 @@
             grid-row: span 2;
         }
 
+        .gallery-item canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
         .gallery-item-content {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             padding: 30px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-            transform: translateY(100%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            transform: translateY(60%);
             transition: transform 0.4s;
+            z-index: 10;
         }
 
         .gallery-item:hover .gallery-item-content {
@@ -677,34 +686,39 @@
             </div>
 
             <div class="gallery-grid">
-                <div class="gallery-item large reveal" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="gallery-item large reveal" id="gallery-1" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <canvas id="canvas-galaxy"></canvas>
                     <div class="gallery-item-content">
                         <h4>کهکشان پارتیکل</h4>
                         <p>۱۰,۰۰۰ ذره در یک کهکشان مارپیچی</p>
                     </div>
                 </div>
-                <div class="gallery-item reveal" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <div class="gallery-item reveal" id="gallery-2" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <canvas id="canvas-city"></canvas>
                     <div class="gallery-item-content">
                         <h4>شهر Lowpoly</h4>
                         <p>شهر سه‌بعدی با ماشین‌های متحرک</p>
                     </div>
                 </div>
-                <div class="gallery-item reveal" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <div class="gallery-item reveal" id="gallery-3" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <canvas id="canvas-shapes"></canvas>
                     <div class="gallery-item-content">
                         <h4>انیمیشن GSAP</h4>
                         <p>انیمیشن‌های حرفه‌ای و روان</p>
                     </div>
                 </div>
-                <div class="gallery-item reveal" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                <div class="gallery-item reveal" id="gallery-4" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                    <canvas id="canvas-torus"></canvas>
                     <div class="gallery-item-content">
                         <h4>Post-Processing</h4>
                         <p>افکت‌های Bloom و Glitch</p>
                     </div>
                 </div>
-                <div class="gallery-item large reveal" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                <div class="gallery-item large reveal" id="gallery-5" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                    <canvas id="canvas-lighting"></canvas>
                     <div class="gallery-item-content">
-                        <h4>هواپیما با پرچم</h4>
-                        <p>مدل‌سازی و انیمیشن پرچم موج‌دار</p>
+                        <h4>نورپردازی پیشرفته</h4>
+                        <p>نور نقطه‌ای، Spotlight و سایه‌ها</p>
                     </div>
                 </div>
             </div>
@@ -715,24 +729,17 @@
             <div class="section-header reveal">
                 <span class="section-tag">📧 تماس</span>
                 <h2>در ارتباط باشید</h2>
-                <p>سوالی دارید؟ با ما در میان بگذارید</p>
+                <p>سوالی دارید؟ با من در میان بگذارید</p>
             </div>
 
             <div class="contact-box reveal">
                 <form class="contact-form">
                     <div class="form-group">
-                        <label>نام شما</label>
-                        <input type="text" placeholder="نام خود را وارد کنید">
+                        <input type="text" readonly value="میلاد زندی زند">
                     </div>
                     <div class="form-group">
-                        <label>ایمیل</label>
-                        <input type="email" placeholder="email@example.com">
+                        <input type="email" readonly value="miladxandi@protonmail.com">
                     </div>
-                    <div class="form-group">
-                        <label>پیام</label>
-                        <textarea placeholder="پیام خود را بنویسید..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">ارسال پیام</button>
                 </form>
             </div>
         </section>
@@ -972,10 +979,317 @@
             }, 500);
         }, 5000);
 
-        // Form submission prevention
-        document.querySelector('.contact-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('پیام شما ارسال شد! (دمو)');
+
+
+        // ========== Gallery Mini Scenes ==========
+        
+        function createMiniScene(canvasId, createContent) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            
+            const parent = canvas.parentElement;
+            const width = parent.offsetWidth;
+            const height = parent.offsetHeight;
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+            
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+            
+            const content = createContent(scene, camera);
+            
+            return { scene, camera, renderer, content, canvas, parent };
+        }
+
+        // 1. Galaxy Mini Scene
+        const galaxyScene = createMiniScene('canvas-galaxy', (scene, camera) => {
+            camera.position.set(3, 4, 3);
+            camera.lookAt(0, 0, 0);
+            
+            const particleCount = 2000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            const colorInside = new THREE.Color('#ff6030');
+            const colorOutside = new THREE.Color('#1b3984');
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                const radius = Math.random() * 2.5;
+                const spinAngle = radius * 2;
+                const branchAngle = (i % 5) / 5 * Math.PI * 2;
+                
+                const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.3 * radius;
+                const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.3 * radius;
+                const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.3 * radius;
+                
+                positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+                positions[i3 + 1] = randomY;
+                positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+                
+                const mixedColor = colorInside.clone();
+                mixedColor.lerp(colorOutside, radius / 2.5);
+                colors[i3] = mixedColor.r;
+                colors[i3 + 1] = mixedColor.g;
+                colors[i3 + 2] = mixedColor.b;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.03,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending,
+                vertexColors: true
+            });
+            
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+            return points;
+        });
+
+        // 2. City Mini Scene
+        const cityScene = createMiniScene('canvas-city', (scene, camera) => {
+            camera.position.set(4, 3, 4);
+            camera.lookAt(0, 0, 0);
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            const group = new THREE.Group();
+            const colors = [0xf093fb, 0xf5576c, 0xff6b6b, 0xfeca57];
+            
+            for (let i = 0; i < 20; i++) {
+                const height = 0.5 + Math.random() * 2;
+                const geometry = new THREE.BoxGeometry(0.4, height, 0.4);
+                const material = new THREE.MeshStandardMaterial({ 
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    flatShading: true 
+                });
+                const building = new THREE.Mesh(geometry, material);
+                building.position.set(
+                    (Math.random() - 0.5) * 5,
+                    height / 2,
+                    (Math.random() - 0.5) * 5
+                );
+                group.add(building);
+            }
+            
+            const planeGeo = new THREE.PlaneGeometry(8, 8);
+            const planeMat = new THREE.MeshStandardMaterial({ color: 0x2d2d44 });
+            const plane = new THREE.Mesh(planeGeo, planeMat);
+            plane.rotation.x = -Math.PI / 2;
+            group.add(plane);
+            
+            scene.add(group);
+            return group;
+        });
+
+        // 3. Shapes Mini Scene
+        const shapesScene = createMiniScene('canvas-shapes', (scene, camera) => {
+            camera.position.z = 4;
+            scene.background = new THREE.Color(0x0a1628);
+            
+            const group = new THREE.Group();
+            
+            const geometries = [
+                new THREE.BoxGeometry(0.8, 0.8, 0.8),
+                new THREE.SphereGeometry(0.5, 16, 16),
+                new THREE.ConeGeometry(0.4, 0.8, 8)
+            ];
+            const colors = [0x4facfe, 0x00f2fe, 0x48dbfb];
+            
+            geometries.forEach((geo, i) => {
+                const mat = new THREE.MeshStandardMaterial({ 
+                    color: colors[i], 
+                    metalness: 0.5, 
+                    roughness: 0.3 
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.x = (i - 1) * 1.5;
+                group.add(mesh);
+            });
+            
+            scene.add(group);
+            return group;
+        });
+
+        // 4. Torus Mini Scene
+        const torusScene = createMiniScene('canvas-torus', (scene, camera) => {
+            camera.position.z = 4;
+            scene.background = new THREE.Color(0x0a1a0a);
+            
+            const geometry = new THREE.TorusKnotGeometry(0.8, 0.25, 100, 16);
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0x43e97b, 
+                metalness: 0.7, 
+                roughness: 0.2,
+                emissive: 0x43e97b,
+                emissiveIntensity: 0.2
+            });
+            const torusKnot = new THREE.Mesh(geometry, material);
+            scene.add(torusKnot);
+            return torusKnot;
+        });
+
+        // 5. Lighting Mini Scene
+        const lightingScene = createMiniScene('canvas-lighting', (scene, camera) => {
+            camera.position.set(4, 3, 4);
+            camera.lookAt(0, 0, 0);
+            scene.background = new THREE.Color(0x0a0a15);
+            
+            // Floor
+            const floorGeo = new THREE.PlaneGeometry(10, 10);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x222233 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -1;
+            floor.receiveShadow = true;
+            scene.add(floor);
+            
+            // Objects
+            const objects = [];
+            
+            // Sphere
+            const sphereGeo = new THREE.SphereGeometry(0.6, 32, 32);
+            const sphereMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
+            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+            sphere.position.set(-1.5, 0, 0);
+            sphere.castShadow = true;
+            scene.add(sphere);
+            objects.push(sphere);
+            
+            // Cube
+            const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+            const cubeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
+            const cube = new THREE.Mesh(cubeGeo, cubeMat);
+            cube.position.set(0, 0, 0);
+            cube.castShadow = true;
+            scene.add(cube);
+            objects.push(cube);
+            
+            // Torus
+            const torusGeo = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
+            const torusMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
+            const torus = new THREE.Mesh(torusGeo, torusMat);
+            torus.position.set(1.5, 0, 0);
+            torus.castShadow = true;
+            scene.add(torus);
+            objects.push(torus);
+            
+            // Colored Point Lights
+            const light1 = new THREE.PointLight(0xff6b6b, 2, 10);
+            light1.position.set(2, 2, 2);
+            scene.add(light1);
+            
+            const light2 = new THREE.PointLight(0x6b6bff, 2, 10);
+            light2.position.set(-2, 2, -2);
+            scene.add(light2);
+            
+            const light3 = new THREE.PointLight(0x6bff6b, 2, 10);
+            light3.position.set(0, 2, 2);
+            scene.add(light3);
+            
+            // Light helpers (small spheres)
+            const helperGeo = new THREE.SphereGeometry(0.1, 8, 8);
+            
+            const helper1 = new THREE.Mesh(helperGeo, new THREE.MeshBasicMaterial({ color: 0xff6b6b }));
+            helper1.position.copy(light1.position);
+            scene.add(helper1);
+            
+            const helper2 = new THREE.Mesh(helperGeo, new THREE.MeshBasicMaterial({ color: 0x6b6bff }));
+            helper2.position.copy(light2.position);
+            scene.add(helper2);
+            
+            const helper3 = new THREE.Mesh(helperGeo, new THREE.MeshBasicMaterial({ color: 0x6bff6b }));
+            helper3.position.copy(light3.position);
+            scene.add(helper3);
+            
+            return { 
+                objects, 
+                lights: [light1, light2, light3],
+                helpers: [helper1, helper2, helper3]
+            };
+        });
+
+        // Animate all gallery scenes
+        function animateGallery() {
+            requestAnimationFrame(animateGallery);
+            const t = Date.now() * 0.001;
+            
+            if (galaxyScene) {
+                galaxyScene.content.rotation.y = t * 0.2;
+                galaxyScene.renderer.render(galaxyScene.scene, galaxyScene.camera);
+            }
+            
+            if (cityScene) {
+                cityScene.content.rotation.y = t * 0.3;
+                cityScene.renderer.render(cityScene.scene, cityScene.camera);
+            }
+            
+            if (shapesScene) {
+                shapesScene.content.children.forEach((mesh, i) => {
+                    mesh.rotation.x = t + i;
+                    mesh.rotation.y = t * 0.5 + i;
+                    mesh.position.y = Math.sin(t * 2 + i) * 0.3;
+                });
+                shapesScene.renderer.render(shapesScene.scene, shapesScene.camera);
+            }
+            
+            if (torusScene) {
+                torusScene.content.rotation.x = t * 0.5;
+                torusScene.content.rotation.y = t * 0.3;
+                torusScene.renderer.render(torusScene.scene, torusScene.camera);
+            }
+            
+            if (lightingScene) {
+                // Rotate objects
+                lightingScene.content.objects.forEach((obj, i) => {
+                    obj.rotation.x = t * 0.5 + i;
+                    obj.rotation.y = t * 0.3 + i;
+                });
+                
+                // Animate lights orbiting
+                lightingScene.content.lights[0].position.x = Math.sin(t) * 3;
+                lightingScene.content.lights[0].position.z = Math.cos(t) * 3;
+                
+                lightingScene.content.lights[1].position.x = Math.sin(t + 2) * 3;
+                lightingScene.content.lights[1].position.z = Math.cos(t + 2) * 3;
+                
+                lightingScene.content.lights[2].position.x = Math.sin(t + 4) * 3;
+                lightingScene.content.lights[2].position.z = Math.cos(t + 4) * 3;
+                
+                // Update helper positions
+                lightingScene.content.helpers.forEach((helper, i) => {
+                    helper.position.copy(lightingScene.content.lights[i].position);
+                });
+                
+                lightingScene.renderer.render(lightingScene.scene, lightingScene.camera);
+            }
+        }
+        
+        animateGallery();
+
+        // Handle gallery resize
+        window.addEventListener('resize', () => {
+            [galaxyScene, cityScene, shapesScene, torusScene, lightingScene].forEach(s => {
+                if (s) {
+                    const w = s.parent.offsetWidth;
+                    const h = s.parent.offsetHeight;
+                    s.camera.aspect = w / h;
+                    s.camera.updateProjectionMatrix();
+                    s.renderer.setSize(w, h);
+                }
+            });
         });
     </script>
 </body>
