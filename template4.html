@@ -10,33 +10,155 @@
     <link rel="stylesheet" href="style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            background: #000;
-        }
+        body { font-family: "Vazirmatn", sans-serif; overflow-x: hidden; background: #000; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.85), rgba(238, 90, 36, 0.85));
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            z-index: 100;
-            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #fff; background: linear-gradient(135deg, rgba(255, 107, 107, 0.85), rgba(238, 90, 36, 0.85));
+            backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 20px;
+            font-size: 16px; z-index: 100; box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
         }
+
+        .tutorial-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(238, 90, 36, 0.9));
+            color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;
+        }
+        .tutorial-toggle:hover { transform: scale(1.05); }
+
+        .tutorial-panel {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: rgba(15, 15, 25, 0.95); backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 80px 25px 25px;
+        }
+        .tutorial-panel.open { right: 0; }
+        .tutorial-panel::-webkit-scrollbar { width: 6px; }
+        .tutorial-panel::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.5); border-radius: 3px; }
+
+        .tutorial-section { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .tutorial-section h3 { color: #ff6b6b; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tutorial-section p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+        .tutorial-section ul { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 2; padding-right: 20px; }
+        .code-block { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin: 12px 0; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .code-block code { color: #a5d6ff; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; direction: ltr; text-align: left; display: block; white-space: pre; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #c586c0; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .number { color: #b5cea8; }
+        .code-block .string { color: #ce9178; }
+        .tip-box { background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(238, 90, 36, 0.1)); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 10px; padding: 12px 15px; margin: 12px 0; }
+        .tip-box p { color: #fca5a5; font-size: 13px; margin: 0; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.3s; }
+        .nav-btn.prev { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn.next { background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: #fff; }
+        .nav-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <div id="info">🎨 قالب ۴: تکسچر و متریال</div>
     
+    <button class="tutorial-toggle" onclick="toggleTutorial()">📚 درسنامه</button>
+    
+    <div class="tutorial-panel" id="tutorialPanel">
+        <div class="tutorial-section">
+            <h3>📖 مقدمه</h3>
+            <p>تکسچرها تصاویری هستند که روی سطوح اشیاء قرار می‌گیرند. در این درس با انواع تکسچر و متریال‌های پیشرفته آشنا می‌شویم.</p>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🎨 انواع متریال</h3>
+            <ul>
+                <li><strong>MeshBasicMaterial:</strong> بدون واکنش به نور</li>
+                <li><strong>MeshStandardMaterial:</strong> PBR استاندارد</li>
+                <li><strong>MeshPhysicalMaterial:</strong> PBR پیشرفته (شیشه)</li>
+                <li><strong>MeshPhongMaterial:</strong> براق</li>
+                <li><strong>MeshLambertMaterial:</strong> مات</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>📷 بارگذاری تکسچر</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> loader = <span class="keyword">new</span> THREE.<span class="function">TextureLoader</span>();
+<span class="keyword">const</span> texture = loader.<span class="function">load</span>(<span class="string">'texture.jpg'</span>);
+
+<span class="keyword">const</span> material = <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({
+    map: texture
+});</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🖼️ تکسچر با Canvas</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> canvas = document.<span class="function">createElement</span>(<span class="string">'canvas'</span>);
+canvas.width = <span class="number">256</span>;
+canvas.height = <span class="number">256</span>;
+<span class="keyword">const</span> ctx = canvas.<span class="function">getContext</span>(<span class="string">'2d'</span>);
+
+<span class="comment">// رسم الگو</span>
+ctx.fillStyle = <span class="string">'#ff6b6b'</span>;
+ctx.<span class="function">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">256</span>, <span class="number">256</span>);
+
+<span class="keyword">const</span> texture = <span class="keyword">new</span> THREE.<span class="function">CanvasTexture</span>(canvas);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>✨ متریال متالیک</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> material = <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({
+    color: <span class="number">0xff6b6b</span>,
+    metalness: <span class="number">0.9</span>,    <span class="comment">// خیلی فلزی</span>
+    roughness: <span class="number">0.1</span>     <span class="comment">// خیلی صاف</span>
+});</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔮 متریال شیشه‌ای</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> glassMaterial = <span class="keyword">new</span> THREE.<span class="function">MeshPhysicalMaterial</span>({
+    color: <span class="number">0x88ccff</span>,
+    metalness: <span class="number">0</span>,
+    roughness: <span class="number">0</span>,
+    transmission: <span class="number">0.9</span>,  <span class="comment">// شفافیت</span>
+    thickness: <span class="number">0.5</span>      <span class="comment">// ضخامت</span>
+});</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔁 تکرار تکسچر</h3>
+            <div class="code-block">
+                <code>texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.<span class="function">set</span>(<span class="number">4</span>, <span class="number">4</span>);  <span class="comment">// ۴ بار تکرار</span></code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>💡 نکته</h3>
+            <div class="tip-box">
+                <p>🎓 MeshPhysicalMaterial سنگین‌تر از MeshStandardMaterial است. فقط زمانی از آن استفاده کنید که به transmission (شیشه) نیاز دارید!</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="template3.html" class="nav-btn prev">→ درس قبلی</a>
+            <a href="template5.html" class="nav-btn next">درس بعدی ←</a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
+        function toggleTutorial() { document.getElementById('tutorialPanel').classList.toggle('open'); }
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0a0a1a);
         
@@ -53,7 +175,6 @@
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.5;
         
-        // نورپردازی
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
         
@@ -61,93 +182,53 @@
         directionalLight.position.set(5, 10, 5);
         scene.add(directionalLight);
         
-        // ایجاد تکسچر با Canvas
         function createCanvasTexture(color1, color2, pattern) {
             const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 256;
+            canvas.width = 256; canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            
             ctx.fillStyle = color1;
             ctx.fillRect(0, 0, 256, 256);
-            
             ctx.fillStyle = color2;
             if (pattern === 'checker') {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
-                        if ((i + j) % 2 === 0) {
-                            ctx.fillRect(i * 32, j * 32, 32, 32);
-                        }
+                        if ((i + j) % 2 === 0) ctx.fillRect(i * 32, j * 32, 32, 32);
                     }
                 }
             } else if (pattern === 'stripes') {
                 for (let i = 0; i < 16; i++) {
-                    if (i % 2 === 0) {
-                        ctx.fillRect(0, i * 16, 256, 16);
-                    }
-                }
-            } else if (pattern === 'dots') {
-                for (let i = 0; i < 8; i++) {
-                    for (let j = 0; j < 8; j++) {
-                        ctx.beginPath();
-                        ctx.arc(i * 32 + 16, j * 32 + 16, 10, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
+                    if (i % 2 === 0) ctx.fillRect(0, i * 16, 256, 16);
                 }
             }
-            
             const texture = new THREE.CanvasTexture(canvas);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             return texture;
         }
         
-        // کره با متریال متالیک
         const sphere1 = new THREE.Mesh(
             new THREE.SphereGeometry(1, 32, 32),
-            new THREE.MeshStandardMaterial({ 
-                color: 0xff6b6b, 
-                metalness: 0.9, 
-                roughness: 0.1 
-            })
+            new THREE.MeshStandardMaterial({ color: 0xff6b6b, metalness: 0.9, roughness: 0.1 })
         );
         sphere1.position.set(-3, 0, 0);
         scene.add(sphere1);
         
-        // مکعب با تکسچر شطرنجی
         const cube = new THREE.Mesh(
             new THREE.BoxGeometry(1.5, 1.5, 1.5),
-            new THREE.MeshStandardMaterial({ 
-                map: createCanvasTexture('#ff6b6b', '#2a2a4a', 'checker'),
-                metalness: 0.2,
-                roughness: 0.8
-            })
+            new THREE.MeshStandardMaterial({ map: createCanvasTexture('#ff6b6b', '#2a2a4a', 'checker'), metalness: 0.2, roughness: 0.8 })
         );
-        cube.position.set(0, 0, 0);
         scene.add(cube);
         
-        // دونات با تکسچر راه‌راه
         const torus = new THREE.Mesh(
             new THREE.TorusGeometry(0.8, 0.35, 16, 100),
-            new THREE.MeshStandardMaterial({ 
-                map: createCanvasTexture('#6bff6b', '#1a3a1a', 'stripes'),
-                metalness: 0.3,
-                roughness: 0.6
-            })
+            new THREE.MeshStandardMaterial({ map: createCanvasTexture('#6bff6b', '#1a3a1a', 'stripes'), metalness: 0.3, roughness: 0.6 })
         );
         torus.position.set(3, 0, 0);
         scene.add(torus);
         
-        // کره شیشه‌ای
         const glassSphere = new THREE.Mesh(
             new THREE.SphereGeometry(0.8, 32, 32),
-            new THREE.MeshPhysicalMaterial({
-                color: 0x88ccff,
-                metalness: 0,
-                roughness: 0,
-                transmission: 0.9,
-                thickness: 0.5
-            })
+            new THREE.MeshPhysicalMaterial({ color: 0x88ccff, metalness: 0, roughness: 0, transmission: 0.9, thickness: 0.5 })
         );
         glassSphere.position.set(0, 2, 0);
         scene.add(glassSphere);
@@ -156,12 +237,10 @@
         
         function animate() {
             requestAnimationFrame(animate);
-            
             objects.forEach((obj, i) => {
                 obj.rotation.y += 0.01;
                 obj.position.y = Math.sin(Date.now() * 0.001 + i) * 0.2 + (i === 3 ? 2 : 0);
             });
-            
             controls.update();
             renderer.render(scene, camera);
         }

@@ -10,33 +10,194 @@
     <link rel="stylesheet" href="style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "Vazirmatn", sans-serif;
-            overflow: hidden;
-            background: #000;
-        }
+        body { font-family: "Vazirmatn", sans-serif; overflow-x: hidden; background: #000; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            z-index: 100;
-            box-shadow: 0 8px 32px rgba(52, 152, 219, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #fff; background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+            backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 20px;
+            font-size: 16px; z-index: 100; box-shadow: 0 8px 32px rgba(52, 152, 219, 0.4);
         }
+
+        .tutorial-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+            color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;
+        }
+        .tutorial-toggle:hover { transform: scale(1.05); }
+
+        .tutorial-panel {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: rgba(15, 15, 25, 0.95); backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 80px 25px 25px;
+        }
+        .tutorial-panel.open { right: 0; }
+        .tutorial-panel::-webkit-scrollbar { width: 6px; }
+        .tutorial-panel::-webkit-scrollbar-thumb { background: rgba(52, 152, 219, 0.5); border-radius: 3px; }
+
+        .tutorial-section { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .tutorial-section h3 { color: #3498db; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tutorial-section p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+        .tutorial-section ul { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 2; padding-right: 20px; }
+        .code-block { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin: 12px 0; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .code-block code { color: #a5d6ff; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; direction: ltr; text-align: left; display: block; white-space: pre; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #c586c0; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .number { color: #b5cea8; }
+        .tip-box { background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(41, 128, 185, 0.1)); border: 1px solid rgba(52, 152, 219, 0.3); border-radius: 10px; padding: 12px 15px; margin: 12px 0; }
+        .tip-box p { color: #7dd3fc; font-size: 13px; margin: 0; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.3s; }
+        .nav-btn.prev { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn.next { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+        .nav-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <div id="info">🏙️ قالب ۹: شهر Lowpoly با ماشین‌های متحرک</div>
     
+    <button class="tutorial-toggle" onclick="toggleTutorial()">📚 درسنامه</button>
+    
+    <div class="tutorial-panel" id="tutorialPanel">
+        <div class="tutorial-section">
+            <h3>📖 مقدمه</h3>
+            <p>Lowpoly یک سبک هنری است که از تعداد کم چندضلعی (polygon) استفاده می‌کند. این سبک برای بازی‌ها و انیمیشن‌ها محبوب است.</p>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🏠 ساختمان ساده</h3>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">createBuilding</span>(x, z, height) {
+    <span class="keyword">const</span> geometry = <span class="keyword">new</span> THREE.<span class="function">BoxGeometry</span>(
+        <span class="number">2</span>, height, <span class="number">2</span>
+    );
+    <span class="keyword">const</span> material = <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({
+        color: <span class="number">0x3498db</span>,
+        flatShading: <span class="keyword">true</span>  <span class="comment">// مهم برای Lowpoly!</span>
+    });
+    <span class="keyword">const</span> building = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(geometry, material);
+    building.position.<span class="function">set</span>(x, height/<span class="number">2</span>, z);
+    <span class="keyword">return</span> building;
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🌳 درخت Lowpoly</h3>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">createTree</span>(x, z) {
+    <span class="keyword">const</span> group = <span class="keyword">new</span> THREE.<span class="function">Group</span>();
+    
+    <span class="comment">// تنه</span>
+    <span class="keyword">const</span> trunk = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+        <span class="keyword">new</span> THREE.<span class="function">CylinderGeometry</span>(<span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">2</span>, <span class="number">6</span>),
+        <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({ 
+            color: <span class="number">0x8b4513</span>,
+            flatShading: <span class="keyword">true</span> 
+        })
+    );
+    
+    <span class="comment">// برگ‌ها</span>
+    <span class="keyword">const</span> leaves = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+        <span class="keyword">new</span> THREE.<span class="function">ConeGeometry</span>(<span class="number">1.5</span>, <span class="number">3</span>, <span class="number">6</span>),
+        <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({ 
+            color: <span class="number">0x228b22</span>,
+            flatShading: <span class="keyword">true</span> 
+        })
+    );
+    
+    group.<span class="function">add</span>(trunk, leaves);
+    <span class="keyword">return</span> group;
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🚗 ماشین ساده</h3>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">createCar</span>(color) {
+    <span class="keyword">const</span> group = <span class="keyword">new</span> THREE.<span class="function">Group</span>();
+    
+    <span class="comment">// بدنه</span>
+    <span class="keyword">const</span> body = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+        <span class="keyword">new</span> THREE.<span class="function">BoxGeometry</span>(<span class="number">2</span>, <span class="number">0.6</span>, <span class="number">1.2</span>),
+        <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({ color })
+    );
+    
+    <span class="comment">// کابین</span>
+    <span class="keyword">const</span> cabin = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+        <span class="keyword">new</span> THREE.<span class="function">BoxGeometry</span>(<span class="number">1.2</span>, <span class="number">0.5</span>, <span class="number">1</span>),
+        <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({ color: <span class="number">0x333333</span> })
+    );
+    
+    group.<span class="function">add</span>(body, cabin);
+    <span class="keyword">return</span> group;
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔄 حرکت ماشین</h3>
+            <div class="code-block">
+                <code>car.userData = {
+    speed: <span class="number">0.1</span>,
+    direction: <span class="number">1</span>
+};
+
+<span class="keyword">function</span> <span class="function">animate</span>() {
+    cars.<span class="function">forEach</span>(car => {
+        car.position.z += car.userData.speed 
+                        * car.userData.direction;
+        
+        <span class="comment">// برگشت در انتها</span>
+        <span class="keyword">if</span> (car.position.z > <span class="number">50</span>) car.position.z = -<span class="number">50</span>;
+        <span class="keyword">if</span> (car.position.z < -<span class="number">50</span>) car.position.z = <span class="number">50</span>;
+    });
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>☁️ ابر ساده</h3>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">createCloud</span>(x, y, z) {
+    <span class="keyword">const</span> group = <span class="keyword">new</span> THREE.<span class="function">Group</span>();
+    
+    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < <span class="number">5</span>; i++) {
+        <span class="keyword">const</span> sphere = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+            <span class="keyword">new</span> THREE.<span class="function">SphereGeometry</span>(Math.<span class="function">random</span>() * <span class="number">2</span> + <span class="number">1</span>),
+            <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({ color: <span class="number">0xffffff</span> })
+        );
+        sphere.position.x = i * <span class="number">1.5</span> - <span class="number">3</span>;
+        group.<span class="function">add</span>(sphere);
+    }
+    <span class="keyword">return</span> group;
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>💡 نکته</h3>
+            <div class="tip-box">
+                <p>🎓 برای ظاهر Lowpoly، همیشه از <strong>flatShading: true</strong> استفاده کنید و تعداد segment های کم در geometry انتخاب کنید (مثلاً ۶ به جای ۳۲).</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="template8.html" class="nav-btn prev">→ درس قبلی</a>
+            <a href="template10.html" class="nav-btn next">درس بعدی ←</a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
+        function toggleTutorial() { document.getElementById('tutorialPanel').classList.toggle('open'); }
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
         scene.fog = new THREE.Fog(0x87ceeb, 50, 150);
@@ -54,46 +215,25 @@
         controls.enableDamping = true;
         controls.maxPolarAngle = Math.PI / 2.2;
         
-        // نورپردازی
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
-        
         const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
         sunLight.position.set(50, 50, 50);
         sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        sunLight.shadow.camera.near = 0.5;
-        sunLight.shadow.camera.far = 200;
-        sunLight.shadow.camera.left = -50;
-        sunLight.shadow.camera.right = 50;
-        sunLight.shadow.camera.top = 50;
-        sunLight.shadow.camera.bottom = -50;
         scene.add(sunLight);
         
-        // زمین سبز
-        const groundGeometry = new THREE.PlaneGeometry(200, 200);
-        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x7cba5f });
-        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x7cba5f }));
         ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
         
-        // خیابان اصلی
         function createRoad(width, length, x, z, rotationY = 0) {
-            const roadGeometry = new THREE.PlaneGeometry(width, length);
-            const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-            const road = new THREE.Mesh(roadGeometry, roadMaterial);
+            const road = new THREE.Mesh(new THREE.PlaneGeometry(width, length), new THREE.MeshStandardMaterial({ color: 0x333333 }));
             road.rotation.x = -Math.PI / 2;
             road.rotation.z = rotationY;
             road.position.set(x, 0.01, z);
-            road.receiveShadow = true;
             scene.add(road);
-            
-            // خطوط وسط خیابان
-            const lineGeometry = new THREE.PlaneGeometry(0.3, length - 2);
-            const lineMaterial = new THREE.MeshStandardMaterial({ color: 0xffcc00 });
-            const line = new THREE.Mesh(lineGeometry, lineMaterial);
+            const line = new THREE.Mesh(new THREE.PlaneGeometry(0.3, length - 2), new THREE.MeshStandardMaterial({ color: 0xffcc00 }));
             line.rotation.x = -Math.PI / 2;
             line.rotation.z = rotationY;
             line.position.set(x, 0.02, z);
@@ -104,249 +244,96 @@
         createRoad(8, 60, -20, 0, Math.PI / 2);
         createRoad(8, 60, 20, 0, Math.PI / 2);
         
-        // ساختمان Lowpoly
-        function createBuilding(x, z, width, depth, height, color) {
-            const group = new THREE.Group();
-            
-            // بدنه ساختمان
-            const buildingGeometry = new THREE.BoxGeometry(width, height, depth);
-            const buildingMaterial = new THREE.MeshStandardMaterial({ color: color, flatShading: true });
-            const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-            building.position.y = height / 2;
-            building.castShadow = true;
-            building.receiveShadow = true;
-            group.add(building);
-            
-            // پنجره‌ها
-            const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: 0x88ccff, emissiveIntensity: 0.2 });
-            const windowSize = 0.8;
-            const floors = Math.floor(height / 3);
-            
-            for (let floor = 0; floor < floors; floor++) {
-                for (let w = 0; w < 2; w++) {
-                    const windowGeometry = new THREE.BoxGeometry(windowSize, windowSize * 1.2, 0.1);
-                    const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-                    windowMesh.position.set((w - 0.5) * (width * 0.4), floor * 3 + 2, depth / 2 + 0.05);
-                    group.add(windowMesh);
-                }
-            }
-            
-            group.position.set(x, 0, z);
-            scene.add(group);
-            return group;
-        }
-        
-        // ایجاد ساختمان‌ها
         const buildingColors = [0xe74c3c, 0x3498db, 0x9b59b6, 0x1abc9c, 0xf39c12, 0x2ecc71];
         
-        // سمت چپ خیابان اصلی
         for (let i = -3; i <= 3; i++) {
             if (Math.abs(i) > 0) {
                 const color = buildingColors[Math.floor(Math.random() * buildingColors.length)];
                 const height = 8 + Math.random() * 15;
-                createBuilding(-12 + Math.random() * 2, i * 12, 6 + Math.random() * 2, 6 + Math.random() * 2, height, color);
+                const building = new THREE.Mesh(new THREE.BoxGeometry(6, height, 6), new THREE.MeshStandardMaterial({ color, flatShading: true }));
+                building.position.set(-12, height / 2, i * 12);
+                building.castShadow = true;
+                scene.add(building);
             }
         }
         
-        // سمت راست خیابان اصلی
         for (let i = -3; i <= 3; i++) {
             if (Math.abs(i) > 0) {
                 const color = buildingColors[Math.floor(Math.random() * buildingColors.length)];
                 const height = 8 + Math.random() * 15;
-                createBuilding(12 + Math.random() * 2, i * 12, 6 + Math.random() * 2, 6 + Math.random() * 2, height, color);
+                const building = new THREE.Mesh(new THREE.BoxGeometry(6, height, 6), new THREE.MeshStandardMaterial({ color, flatShading: true }));
+                building.position.set(12, height / 2, i * 12);
+                building.castShadow = true;
+                scene.add(building);
             }
         }
         
-        // درخت Lowpoly
         function createTree(x, z) {
             const group = new THREE.Group();
-            
-            // تنه
-            const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 2, 6);
-            const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513, flatShading: true });
-            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 2, 6), new THREE.MeshStandardMaterial({ color: 0x8b4513, flatShading: true }));
             trunk.position.y = 1;
             trunk.castShadow = true;
             group.add(trunk);
-            
-            // برگ‌ها
-            const leavesGeometry = new THREE.ConeGeometry(1.5, 3, 6);
-            const leavesMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22, flatShading: true });
-            const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+            const leaves = new THREE.Mesh(new THREE.ConeGeometry(1.5, 3, 6), new THREE.MeshStandardMaterial({ color: 0x228b22, flatShading: true }));
             leaves.position.y = 3.5;
             leaves.castShadow = true;
             group.add(leaves);
-            
             group.position.set(x, 0, z);
             scene.add(group);
         }
         
-        // درخت‌ها کنار خیابان
-        for (let i = -4; i <= 4; i++) {
-            createTree(-6, i * 10);
-            createTree(6, i * 10);
-        }
+        for (let i = -4; i <= 4; i++) { createTree(-6, i * 10); createTree(6, i * 10); }
         
-        // ماشین Lowpoly
         function createCar(color) {
             const group = new THREE.Group();
-            
-            // بدنه پایین
-            const bodyGeometry = new THREE.BoxGeometry(2, 0.6, 1.2);
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: color, flatShading: true });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2, 0.6, 1.2), new THREE.MeshStandardMaterial({ color, flatShading: true }));
             body.position.y = 0.5;
             body.castShadow = true;
             group.add(body);
-            
-            // کابین
-            const cabinGeometry = new THREE.BoxGeometry(1.2, 0.5, 1);
-            const cabinMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, flatShading: true });
-            const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 1), new THREE.MeshStandardMaterial({ color: 0x333333, flatShading: true }));
             cabin.position.set(-0.1, 1.05, 0);
             cabin.castShadow = true;
             group.add(cabin);
-            
-            // شیشه
-            const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.7 });
-            const frontWindow = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.9), windowMaterial);
-            frontWindow.position.set(0.6, 1, 0);
-            frontWindow.rotation.y = Math.PI / 2;
-            group.add(frontWindow);
-            
-            // چرخ‌ها
-            const wheelGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8);
-            const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
-            
-            const wheelPositions = [
-                [0.6, 0.3, 0.6], [0.6, 0.3, -0.6],
-                [-0.6, 0.3, 0.6], [-0.6, 0.3, -0.6]
-            ];
-            
-            wheelPositions.forEach(pos => {
-                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-                wheel.rotation.x = Math.PI / 2;
-                wheel.position.set(...pos);
-                group.add(wheel);
-            });
-            
-            // چراغ‌ها
-            const lightGeometry = new THREE.BoxGeometry(0.1, 0.15, 0.3);
-            const headlightMaterial = new THREE.MeshStandardMaterial({ color: 0xffffcc, emissive: 0xffffcc, emissiveIntensity: 0.5 });
-            const taillightMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.3 });
-            
-            const headlight1 = new THREE.Mesh(lightGeometry, headlightMaterial);
-            headlight1.position.set(1, 0.5, 0.4);
-            group.add(headlight1);
-            
-            const headlight2 = new THREE.Mesh(lightGeometry, headlightMaterial);
-            headlight2.position.set(1, 0.5, -0.4);
-            group.add(headlight2);
-            
-            const taillight1 = new THREE.Mesh(lightGeometry, taillightMaterial);
-            taillight1.position.set(-1, 0.5, 0.4);
-            group.add(taillight1);
-            
-            const taillight2 = new THREE.Mesh(lightGeometry, taillightMaterial);
-            taillight2.position.set(-1, 0.5, -0.4);
-            group.add(taillight2);
-            
             return group;
         }
         
-        // ماشین‌ها در خیابان
         const cars = [];
         const carColors = [0xff4444, 0x4444ff, 0x44ff44, 0xffff44, 0xff44ff, 0x44ffff, 0xffffff];
         
-        // ماشین‌های خیابان اصلی (حرکت در محور Z)
         for (let i = 0; i < 4; i++) {
             const car = createCar(carColors[Math.floor(Math.random() * carColors.length)]);
             car.position.set(i % 2 === 0 ? -2 : 2, 0, -40 + i * 25);
             car.rotation.y = i % 2 === 0 ? 0 : Math.PI;
-            car.userData = { 
-                speed: 0.1 + Math.random() * 0.1, 
-                direction: i % 2 === 0 ? 1 : -1,
-                axis: 'z',
-                lane: i % 2 === 0 ? -2 : 2
-            };
+            car.userData = { speed: 0.1 + Math.random() * 0.1, direction: i % 2 === 0 ? 1 : -1, axis: 'z' };
             scene.add(car);
             cars.push(car);
         }
         
-        // ماشین‌های خیابان عرضی (حرکت در محور X)
-        for (let i = 0; i < 2; i++) {
-            const car = createCar(carColors[Math.floor(Math.random() * carColors.length)]);
-            car.position.set(-25 + i * 50, 0, i % 2 === 0 ? -2 : 2);
-            car.rotation.y = i % 2 === 0 ? Math.PI / 2 : -Math.PI / 2;
-            car.userData = { 
-                speed: 0.08 + Math.random() * 0.08, 
-                direction: i % 2 === 0 ? 1 : -1,
-                axis: 'x',
-                lane: i % 2 === 0 ? -2 : 2
-            };
-            scene.add(car);
-            cars.push(car);
-        }
-        
-        // خورشید
-        const sunGeometry = new THREE.SphereGeometry(5, 16, 16);
-        const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffdd00 });
-        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(5, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffdd00 }));
         sun.position.set(60, 50, -60);
         scene.add(sun);
         
-        // ابرها
-        function createCloud(x, y, z) {
-            const group = new THREE.Group();
-            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true });
-            
-            for (let i = 0; i < 5; i++) {
-                const size = 1 + Math.random() * 2;
-                const cloudPart = new THREE.Mesh(
-                    new THREE.SphereGeometry(size, 8, 8),
-                    cloudMaterial
-                );
-                cloudPart.position.set(i * 1.5 - 3, Math.random() * 0.5, Math.random() * 1 - 0.5);
-                group.add(cloudPart);
-            }
-            
-            group.position.set(x, y, z);
-            scene.add(group);
-            return group;
-        }
-        
         const clouds = [];
         for (let i = 0; i < 8; i++) {
-            const cloud = createCloud(
-                Math.random() * 100 - 50,
-                30 + Math.random() * 10,
-                Math.random() * 100 - 50
-            );
-            clouds.push(cloud);
+            const cloudGroup = new THREE.Group();
+            for (let j = 0; j < 5; j++) {
+                const cloudPart = new THREE.Mesh(new THREE.SphereGeometry(1 + Math.random() * 2, 8, 8), new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true }));
+                cloudPart.position.set(j * 1.5 - 3, Math.random() * 0.5, Math.random() - 0.5);
+                cloudGroup.add(cloudPart);
+            }
+            cloudGroup.position.set(Math.random() * 100 - 50, 30 + Math.random() * 10, Math.random() * 100 - 50);
+            scene.add(cloudGroup);
+            clouds.push(cloudGroup);
         }
         
         function animate() {
             requestAnimationFrame(animate);
-            
-            // حرکت ماشین‌ها
             cars.forEach(car => {
-                if (car.userData.axis === 'z') {
-                    car.position.z += car.userData.speed * car.userData.direction;
-                    if (car.position.z > 50) car.position.z = -50;
-                    if (car.position.z < -50) car.position.z = 50;
-                } else {
-                    car.position.x += car.userData.speed * car.userData.direction;
-                    if (car.position.x > 30) car.position.x = -30;
-                    if (car.position.x < -30) car.position.x = 30;
-                }
+                car.position.z += car.userData.speed * car.userData.direction;
+                if (car.position.z > 50) car.position.z = -50;
+                if (car.position.z < -50) car.position.z = 50;
             });
-            
-            // حرکت ابرها
-            clouds.forEach(cloud => {
-                cloud.position.x += 0.02;
-                if (cloud.position.x > 60) cloud.position.x = -60;
-            });
-            
+            clouds.forEach(cloud => { cloud.position.x += 0.02; if (cloud.position.x > 60) cloud.position.x = -60; });
             controls.update();
             renderer.render(scene, camera);
         }
@@ -361,4 +348,3 @@
     </script>
 </body>
 </html>
-

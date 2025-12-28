@@ -10,63 +10,195 @@
     <link rel="stylesheet" href="style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "Vazirmatn", sans-serif;
-            overflow: hidden;
-            background: #000;
-        }
+        body { font-family: "Vazirmatn", sans-serif; overflow-x: hidden; background: #000; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: linear-gradient(135deg, rgba(0, 150, 57, 0.9), rgba(218, 0, 0, 0.9));
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            z-index: 100;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #fff; background: linear-gradient(135deg, rgba(0, 150, 57, 0.9), rgba(218, 0, 0, 0.9));
+            backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 20px;
+            font-size: 16px; z-index: 100; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
+
+        .tutorial-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: linear-gradient(135deg, rgba(0, 150, 57, 0.9), rgba(218, 0, 0, 0.9));
+            color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;
+        }
+        .tutorial-toggle:hover { transform: scale(1.05); }
+
+        .tutorial-panel {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: rgba(15, 15, 25, 0.95); backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 80px 25px 25px;
+        }
+        .tutorial-panel.open { right: 0; }
+        .tutorial-panel::-webkit-scrollbar { width: 6px; }
+        .tutorial-panel::-webkit-scrollbar-thumb { background: rgba(0, 150, 57, 0.5); border-radius: 3px; }
+
+        .tutorial-section { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .tutorial-section h3 { color: #22c55e; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tutorial-section p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+        .tutorial-section ul { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 2; padding-right: 20px; }
+        .code-block { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin: 12px 0; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .code-block code { color: #a5d6ff; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; direction: ltr; text-align: left; display: block; white-space: pre; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #c586c0; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .number { color: #b5cea8; }
+        .code-block .string { color: #ce9178; }
+        .tip-box { background: linear-gradient(135deg, rgba(0, 150, 57, 0.15), rgba(218, 0, 0, 0.1)); border: 1px solid rgba(0, 150, 57, 0.3); border-radius: 10px; padding: 12px 15px; margin: 12px 0; }
+        .tip-box p { color: #86efac; font-size: 13px; margin: 0; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.3s; }
+        .nav-btn.prev { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn.next { background: linear-gradient(135deg, #009639, #da0000); color: #fff; }
+        .nav-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <div id="info">✈️ قالب ۱۰: هواپیما با پرچم ایران 🇮🇷</div>
     
+    <button class="tutorial-toggle" onclick="toggleTutorial()">📚 درسنامه</button>
+    
+    <div class="tutorial-panel" id="tutorialPanel">
+        <div class="tutorial-section">
+            <h3>📖 مقدمه</h3>
+            <p>در این درس نهایی، یک هواپیما با پرچم ایران می‌سازیم. یاد می‌گیریم چطور مدل‌های پیچیده‌تر بسازیم و انیمیشن پارچه ایجاد کنیم.</p>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔧 Group</h3>
+            <p>برای مدل‌های چند قسمتی از Group استفاده می‌کنیم:</p>
+            <div class="code-block">
+                <code><span class="keyword">const</span> airplane = <span class="keyword">new</span> THREE.<span class="function">Group</span>();
+
+<span class="comment">// اضافه کردن قطعات</span>
+airplane.<span class="function">add</span>(body);
+airplane.<span class="function">add</span>(wing);
+airplane.<span class="function">add</span>(tail);
+
+<span class="comment">// حرکت کل هواپیما</span>
+airplane.position.y = <span class="number">5</span>;</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>✈️ بدنه هواپیما</h3>
+            <div class="code-block">
+                <code><span class="comment">// بدنه (استوانه)</span>
+<span class="keyword">const</span> body = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+    <span class="keyword">new</span> THREE.<span class="function">CylinderGeometry</span>(<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">8</span>, <span class="number">16</span>),
+    material
+);
+body.rotation.z = Math.PI / <span class="number">2</span>;  <span class="comment">// افقی</span>
+
+<span class="comment">// دماغه (مخروط)</span>
+<span class="keyword">const</span> nose = <span class="keyword">new</span> THREE.<span class="function">Mesh</span>(
+    <span class="keyword">new</span> THREE.<span class="function">ConeGeometry</span>(<span class="number">0.5</span>, <span class="number">1.5</span>, <span class="number">16</span>),
+    material
+);
+nose.rotation.z = -Math.PI / <span class="number">2</span>;</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🇮🇷 پرچم با Canvas</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> canvas = document.<span class="function">createElement</span>(<span class="string">'canvas'</span>);
+canvas.width = <span class="number">150</span>;
+canvas.height = <span class="number">90</span>;
+<span class="keyword">const</span> ctx = canvas.<span class="function">getContext</span>(<span class="string">'2d'</span>);
+
+<span class="comment">// سبز</span>
+ctx.fillStyle = <span class="string">'#009639'</span>;
+ctx.<span class="function">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">150</span>, <span class="number">30</span>);
+
+<span class="comment">// سفید</span>
+ctx.fillStyle = <span class="string">'#ffffff'</span>;
+ctx.<span class="function">fillRect</span>(<span class="number">0</span>, <span class="number">30</span>, <span class="number">150</span>, <span class="number">30</span>);
+
+<span class="comment">// قرمز</span>
+ctx.fillStyle = <span class="string">'#da0000'</span>;
+ctx.<span class="function">fillRect</span>(<span class="number">0</span>, <span class="number">60</span>, <span class="number">150</span>, <span class="number">30</span>);
+
+<span class="keyword">const</span> texture = <span class="keyword">new</span> THREE.<span class="function">CanvasTexture</span>(canvas);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🌊 انیمیشن موج پرچم</h3>
+            <div class="code-block">
+                <code><span class="comment">// پرچم با segment های زیاد</span>
+<span class="keyword">const</span> flagGeo = <span class="keyword">new</span> THREE.<span class="function">PlaneGeometry</span>(
+    <span class="number">6</span>, <span class="number">3.6</span>, <span class="number">30</span>, <span class="number">18</span>  <span class="comment">// segments زیاد!</span>
+);
+
+<span class="keyword">function</span> <span class="function">animateFlag</span>(time) {
+    <span class="keyword">const</span> positions = flagGeo.attributes.position;
+    
+    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < positions.count; i++) {
+        <span class="keyword">const</span> x = positions.<span class="function">getX</span>(i);
+        <span class="comment">// موج سینوسی</span>
+        <span class="keyword">const</span> wave = Math.<span class="function">sin</span>(x * <span class="number">2</span> + time * <span class="number">3</span>) * <span class="number">0.3</span>;
+        positions.<span class="function">setZ</span>(i, wave);
+    }
+    positions.needsUpdate = <span class="keyword">true</span>;
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🌤️ Sky Shader</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> skyMaterial = <span class="keyword">new</span> THREE.<span class="function">ShaderMaterial</span>({
+    uniforms: {
+        topColor: { value: <span class="keyword">new</span> THREE.<span class="function">Color</span>(<span class="number">0x0077ff</span>) },
+        bottomColor: { value: <span class="keyword">new</span> THREE.<span class="function">Color</span>(<span class="number">0x89cff0</span>) }
+    },
+    vertexShader: <span class="string">`...`</span>,
+    fragmentShader: <span class="string">`
+        // گرادیان بر اساس ارتفاع
+        float h = normalize(vWorldPosition).y;
+        gl_FragColor = vec4(
+            mix(bottomColor, topColor, h), 1.0
+        );
+    `</span>,
+    side: THREE.BackSide
+});</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>💡 نکته نهایی</h3>
+            <div class="tip-box">
+                <p>🎓 تبریک! شما تمام مفاهیم پایه Three.js را یاد گرفتید: Scene, Camera, Renderer, Geometry, Material, Light, Particles, Raycaster, Animation و Post-Processing!</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="template9.html" class="nav-btn prev">→ درس قبلی</a>
+            <a href="index.html" class="nav-btn next">🏠 بازگشت به فهرست</a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
+        function toggleTutorial() { document.getElementById('tutorialPanel').classList.toggle('open'); }
+
         const scene = new THREE.Scene();
         
-        // آسمان گرادیانت
         const skyGeometry = new THREE.SphereGeometry(500, 32, 32);
         const skyMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                topColor: { value: new THREE.Color(0x0077ff) },
-                bottomColor: { value: new THREE.Color(0x89cff0) }
-            },
-            vertexShader: `
-                varying vec3 vWorldPosition;
-                void main() {
-                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-                    vWorldPosition = worldPosition.xyz;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 topColor;
-                uniform vec3 bottomColor;
-                varying vec3 vWorldPosition;
-                void main() {
-                    float h = normalize(vWorldPosition).y;
-                    gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0);
-                }
-            `,
+            uniforms: { topColor: { value: new THREE.Color(0x0077ff) }, bottomColor: { value: new THREE.Color(0x89cff0) } },
+            vertexShader: `varying vec3 vWorldPosition; void main() { vec4 worldPosition = modelMatrix * vec4(position, 1.0); vWorldPosition = worldPosition.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `uniform vec3 topColor; uniform vec3 bottomColor; varying vec3 vWorldPosition; void main() { float h = normalize(vWorldPosition).y; gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0); }`,
             side: THREE.BackSide
         });
-        const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-        scene.add(sky);
+        scene.add(new THREE.Mesh(skyGeometry, skyMaterial));
         
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(15, 5, 15);
@@ -82,282 +214,126 @@
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.5;
         
-        // نورپردازی
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
         const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
         sunLight.position.set(50, 50, 50);
-        sunLight.castShadow = true;
         scene.add(sunLight);
         
-        // ایجاد هواپیما
-        function createAirplane() {
-            const airplane = new THREE.Group();
-            
-            // بدنه اصلی
-            const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8, 16);
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-            body.rotation.z = Math.PI / 2;
-            body.castShadow = true;
-            airplane.add(body);
-            
-            // دماغه
-            const noseGeometry = new THREE.ConeGeometry(0.5, 1.5, 16);
-            const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.5, roughness: 0.3 });
-            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
-            nose.rotation.z = -Math.PI / 2;
-            nose.position.x = 4.7;
-            nose.castShadow = true;
-            airplane.add(nose);
-            
-            // دم
-            const tailGeometry = new THREE.ConeGeometry(0.5, 2, 16);
-            const tail = new THREE.Mesh(tailGeometry, bodyMaterial);
-            tail.rotation.z = Math.PI / 2;
-            tail.position.x = -5;
-            tail.castShadow = true;
-            airplane.add(tail);
-            
-            // باله عمودی دم
-            const verticalTailGeometry = new THREE.BoxGeometry(1.5, 2, 0.1);
-            const tailMaterial = new THREE.MeshStandardMaterial({ color: 0xda0000 });
-            const verticalTail = new THREE.Mesh(verticalTailGeometry, tailMaterial);
-            verticalTail.position.set(-4.5, 1, 0);
-            verticalTail.rotation.z = -0.3;
-            verticalTail.castShadow = true;
-            airplane.add(verticalTail);
-            
-            // باله‌های افقی دم
-            const horizontalTailGeometry = new THREE.BoxGeometry(1, 0.1, 3);
-            const horizontalTailMaterial = new THREE.MeshStandardMaterial({ color: 0x009639 });
-            const horizontalTail = new THREE.Mesh(horizontalTailGeometry, horizontalTailMaterial);
-            horizontalTail.position.set(-4.5, 0, 0);
-            horizontalTail.castShadow = true;
-            airplane.add(horizontalTail);
-            
-            // بال‌های اصلی
-            const wingGeometry = new THREE.BoxGeometry(2, 0.15, 10);
-            const wingMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.3, roughness: 0.4 });
-            const wings = new THREE.Mesh(wingGeometry, wingMaterial);
-            wings.position.set(0, 0, 0);
-            wings.castShadow = true;
-            airplane.add(wings);
-            
-            // موتورها
-            const engineGeometry = new THREE.CylinderGeometry(0.35, 0.4, 1.5, 16);
-            const engineMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.7, roughness: 0.3 });
-            
-            const engine1 = new THREE.Mesh(engineGeometry, engineMaterial);
-            engine1.rotation.z = Math.PI / 2;
-            engine1.position.set(0.5, -0.3, 2.5);
-            engine1.castShadow = true;
-            airplane.add(engine1);
-            
-            const engine2 = new THREE.Mesh(engineGeometry, engineMaterial);
-            engine2.rotation.z = Math.PI / 2;
-            engine2.position.set(0.5, -0.3, -2.5);
-            engine2.castShadow = true;
-            airplane.add(engine2);
-            
-            // کابین خلبان
-            const cockpitGeometry = new THREE.SphereGeometry(0.45, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-            const cockpitMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x88ccff, 
-                transparent: true, 
-                opacity: 0.7,
-                metalness: 0.3,
-                roughness: 0.1
-            });
-            const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
-            cockpit.position.set(3, 0.4, 0);
-            cockpit.rotation.z = -Math.PI / 2;
-            airplane.add(cockpit);
-            
-            // پنجره‌ها
-            const windowMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x88ccff, 
-                emissive: 0x88ccff, 
-                emissiveIntensity: 0.2 
-            });
-            for (let i = 0; i < 6; i++) {
-                const windowGeometry = new THREE.CircleGeometry(0.12, 16);
-                const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
-                windowMesh.position.set(1.5 - i * 0.7, 0.3, 0.51);
-                airplane.add(windowMesh);
-                
-                const windowMesh2 = windowMesh.clone();
-                windowMesh2.position.z = -0.51;
-                windowMesh2.rotation.y = Math.PI;
-                airplane.add(windowMesh2);
-            }
-            
-            return airplane;
-        }
+        const airplane = new THREE.Group();
         
-        // ایجاد پرچم ایران
-        function createIranFlag() {
-            const flagGroup = new THREE.Group();
-            
-            // طناب/ریسمان
-            const ropeGeometry = new THREE.CylinderGeometry(0.02, 0.02, 8, 8);
-            const ropeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-            const rope = new THREE.Mesh(ropeGeometry, ropeMaterial);
-            rope.rotation.z = Math.PI / 2;
-            rope.position.x = -4;
-            flagGroup.add(rope);
-            
-            // پرچم
-            const flagWidth = 6;
-            const flagHeight = 3.6;
-            const segmentsW = 30;
-            const segmentsH = 18;
-            
-            const flagGeometry = new THREE.PlaneGeometry(flagWidth, flagHeight, segmentsW, segmentsH);
-            
-            // ایجاد تکسچر پرچم ایران با Canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 307;
-            const ctx = canvas.getContext('2d');
-            
-            // سبز
-            ctx.fillStyle = '#009639';
-            ctx.fillRect(0, 0, 512, 102);
-            
-            // سفید
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 102, 512, 103);
-            
-            // قرمز
-            ctx.fillStyle = '#da0000';
-            ctx.fillRect(0, 205, 512, 102);
-            
-            // نوشته الله اکبر روی نوار سبز و قرمز
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 14px Arial';
-            for (let i = 0; i < 11; i++) {
-                ctx.fillText('الله اکبر', 10 + i * 46, 98);
-            }
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 11; i++) {
-                ctx.fillText('الله اکبر', 10 + i * 46, 220);
-            }
-            
-            // نشان وسط (الله ساده شده)
-            ctx.fillStyle = '#da0000';
-            ctx.beginPath();
-            ctx.arc(256, 153, 35, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 40px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('الله', 256, 168);
-            
-            const flagTexture = new THREE.CanvasTexture(canvas);
-            flagTexture.wrapS = THREE.ClampToEdgeWrapping;
-            flagTexture.wrapT = THREE.ClampToEdgeWrapping;
-            
-            const flagMaterial = new THREE.MeshStandardMaterial({
-                map: flagTexture,
-                side: THREE.DoubleSide,
-                transparent: false
-            });
-            
-            const flag = new THREE.Mesh(flagGeometry, flagMaterial);
-            flag.position.set(-8, 0, 0);
-            flag.userData = { geometry: flagGeometry, time: 0 };
-            flagGroup.add(flag);
-            
-            return flagGroup;
-        }
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 8, 16), bodyMat);
+        body.rotation.z = Math.PI / 2;
+        body.castShadow = true;
+        airplane.add(body);
         
-        const airplane = createAirplane();
-        airplane.position.set(0, 0, 0);
-        scene.add(airplane);
+        const nose = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.5, 16), new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.5, roughness: 0.3 }));
+        nose.rotation.z = -Math.PI / 2;
+        nose.position.x = 4.7;
+        airplane.add(nose);
         
-        const flagGroup = createIranFlag();
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.5, 2, 16), bodyMat);
+        tail.rotation.z = Math.PI / 2;
+        tail.position.x = -5;
+        airplane.add(tail);
+        
+        const verticalTail = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xda0000 }));
+        verticalTail.position.set(-4.5, 1, 0);
+        verticalTail.rotation.z = -0.3;
+        airplane.add(verticalTail);
+        
+        const horizontalTail = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 3), new THREE.MeshStandardMaterial({ color: 0x009639 }));
+        horizontalTail.position.set(-4.5, 0, 0);
+        airplane.add(horizontalTail);
+        
+        const wings = new THREE.Mesh(new THREE.BoxGeometry(2, 0.15, 10), bodyMat);
+        wings.castShadow = true;
+        airplane.add(wings);
+        
+        const engineMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.7, roughness: 0.3 });
+        const engine1 = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 1.5, 16), engineMat);
+        engine1.rotation.z = Math.PI / 2;
+        engine1.position.set(0.5, -0.3, 2.5);
+        airplane.add(engine1);
+        const engine2 = engine1.clone();
+        engine2.position.z = -2.5;
+        airplane.add(engine2);
+        
+        const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.7 });
+        const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), cockpitMat);
+        cockpit.position.set(3, 0.4, 0);
+        cockpit.rotation.z = -Math.PI / 2;
+        airplane.add(cockpit);
+        
+        const flagGroup = new THREE.Group();
+        const ropeGeo = new THREE.CylinderGeometry(0.02, 0.02, 8, 8);
+        const rope = new THREE.Mesh(ropeGeo, new THREE.MeshStandardMaterial({ color: 0x8b4513 }));
+        rope.rotation.z = Math.PI / 2;
+        rope.position.x = -4;
+        flagGroup.add(rope);
+        
+        const flagGeo = new THREE.PlaneGeometry(6, 3.6, 30, 18);
+        const flagCanvas = document.createElement('canvas');
+        flagCanvas.width = 512;
+        flagCanvas.height = 307;
+        const ctx = flagCanvas.getContext('2d');
+        ctx.fillStyle = '#009639';
+        ctx.fillRect(0, 0, 512, 102);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 102, 512, 103);
+        ctx.fillStyle = '#da0000';
+        ctx.fillRect(0, 205, 512, 102);
+        ctx.fillStyle = '#da0000';
+        ctx.beginPath();
+        ctx.arc(256, 153, 35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('الله', 256, 168);
+        
+        const flagTexture = new THREE.CanvasTexture(flagCanvas);
+        const flag = new THREE.Mesh(flagGeo, new THREE.MeshStandardMaterial({ map: flagTexture, side: THREE.DoubleSide }));
+        flag.position.set(-8, 0, 0);
+        flagGroup.add(flag);
+        
         flagGroup.position.set(-6, 0, 0);
         airplane.add(flagGroup);
-        
-        // ابرها
-        function createCloud(x, y, z) {
-            const group = new THREE.Group();
-            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true });
-            
-            for (let i = 0; i < 6; i++) {
-                const size = 1 + Math.random() * 2;
-                const cloudPart = new THREE.Mesh(
-                    new THREE.SphereGeometry(size, 8, 8),
-                    cloudMaterial
-                );
-                cloudPart.position.set(
-                    (Math.random() - 0.5) * 5,
-                    (Math.random() - 0.5) * 1,
-                    (Math.random() - 0.5) * 3
-                );
-                group.add(cloudPart);
-            }
-            
-            group.position.set(x, y, z);
-            scene.add(group);
-            return group;
-        }
+        scene.add(airplane);
         
         const clouds = [];
         for (let i = 0; i < 15; i++) {
-            const cloud = createCloud(
-                Math.random() * 200 - 100,
-                Math.random() * 30 - 20,
-                Math.random() * 200 - 100
-            );
-            clouds.push(cloud);
-        }
-        
-        // انیمیشن پرچم (موج‌دار)
-        function animateFlag(flag, time) {
-            const geometry = flag.userData.geometry;
-            const positions = geometry.attributes.position;
-            
-            for (let i = 0; i < positions.count; i++) {
-                const x = positions.getX(i);
-                const y = positions.getY(i);
-                
-                // ایجاد موج
-                const waveX = Math.sin(x * 2 + time * 3) * 0.3;
-                const waveY = Math.sin(x * 1.5 + time * 2.5) * 0.15;
-                const waveZ = Math.sin(x * 2.5 + time * 4) * 0.2 * (1 + x * 0.2);
-                
-                positions.setZ(i, waveZ);
+            const cloudGroup = new THREE.Group();
+            for (let j = 0; j < 6; j++) {
+                const cloudPart = new THREE.Mesh(new THREE.SphereGeometry(1 + Math.random() * 2, 8, 8), new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true }));
+                cloudPart.position.set((Math.random() - 0.5) * 5, (Math.random() - 0.5), (Math.random() - 0.5) * 3);
+                cloudGroup.add(cloudPart);
             }
-            
-            positions.needsUpdate = true;
-            geometry.computeVertexNormals();
+            cloudGroup.position.set(Math.random() * 200 - 100, Math.random() * 30 - 20, Math.random() * 200 - 100);
+            scene.add(cloudGroup);
+            clouds.push(cloudGroup);
         }
         
         let time = 0;
         
         function animate() {
             requestAnimationFrame(animate);
-            
             time += 0.016;
             
-            // حرکت هواپیما
             airplane.position.x = Math.sin(time * 0.3) * 5;
             airplane.position.y = Math.sin(time * 0.5) * 2;
             airplane.rotation.z = Math.sin(time * 0.5) * 0.05;
             airplane.rotation.x = Math.sin(time * 0.3) * 0.03;
             
-            // انیمیشن پرچم
-            const flag = flagGroup.children[1];
-            if (flag && flag.userData) {
-                flag.userData.time = time;
-                animateFlag(flag, time);
+            const positions = flagGeo.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const waveZ = Math.sin(x * 2.5 + time * 4) * 0.2 * (1 + x * 0.2);
+                positions.setZ(i, waveZ);
             }
+            positions.needsUpdate = true;
+            flagGeo.computeVertexNormals();
             
-            // حرکت ابرها
             clouds.forEach((cloud, i) => {
                 cloud.position.x -= 0.1 + i * 0.01;
                 if (cloud.position.x < -100) cloud.position.x = 100;
@@ -377,4 +353,3 @@
     </script>
 </body>
 </html>
-

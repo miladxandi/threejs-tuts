@@ -10,32 +10,52 @@
     <link rel="stylesheet" href="style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            background: #000;
-        }
+        body { font-family: "Vazirmatn", sans-serif; overflow-x: hidden; background: #000; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: linear-gradient(135deg, rgba(0, 206, 201, 0.85), rgba(0, 148, 146, 0.85));
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            z-index: 100;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 206, 201, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #fff; background: linear-gradient(135deg, rgba(0, 206, 201, 0.85), rgba(0, 148, 146, 0.85));
+            backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 20px;
+            font-size: 16px; z-index: 100; text-align: center; box-shadow: 0 8px 32px rgba(0, 206, 201, 0.4);
         }
-        #info small {
-            display: block;
-            margin-top: 8px;
-            opacity: 0.9;
-            font-size: 13px;
+        #info small { display: block; margin-top: 8px; opacity: 0.9; font-size: 13px; }
+
+        .tutorial-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: linear-gradient(135deg, rgba(0, 206, 201, 0.9), rgba(0, 148, 146, 0.9));
+            color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;
         }
+        .tutorial-toggle:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0, 206, 201, 0.4); }
+
+        .tutorial-panel {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: rgba(15, 15, 25, 0.95); backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 80px 25px 25px;
+        }
+        .tutorial-panel.open { right: 0; }
+        .tutorial-panel::-webkit-scrollbar { width: 6px; }
+        .tutorial-panel::-webkit-scrollbar-thumb { background: rgba(0, 206, 201, 0.5); border-radius: 3px; }
+
+        .tutorial-section { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .tutorial-section h3 { color: #00ced1; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tutorial-section p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+        .tutorial-section ul { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 2; padding-right: 20px; }
+        .code-block { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin: 12px 0; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .code-block code { color: #a5d6ff; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; direction: ltr; text-align: left; display: block; white-space: pre; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #c586c0; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .number { color: #b5cea8; }
+        .tip-box { background: linear-gradient(135deg, rgba(0, 206, 201, 0.15), rgba(0, 148, 146, 0.1)); border: 1px solid rgba(0, 206, 201, 0.3); border-radius: 10px; padding: 12px 15px; margin: 12px 0; }
+        .tip-box p { color: #5eead4; font-size: 13px; margin: 0; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.3s; }
+        .nav-btn.prev { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn.next { background: linear-gradient(135deg, #00ced1, #009494); color: #fff; }
+        .nav-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -44,9 +64,114 @@
         <small>🖱️ چپ‌کلیک: چرخش | راست‌کلیک: جابجایی | اسکرول: زوم</small>
     </div>
     
+    <button class="tutorial-toggle" onclick="toggleTutorial()">📚 درسنامه</button>
+    
+    <div class="tutorial-panel" id="tutorialPanel">
+        <div class="tutorial-section">
+            <h3>📖 مقدمه</h3>
+            <p>OrbitControls یک ابزار قدرتمند برای کنترل دوربین است که به کاربر اجازه می‌دهد صحنه را از زوایای مختلف ببیند.</p>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🎮 قابلیت‌ها</h3>
+            <ul>
+                <li><strong>چرخش:</strong> کلیک چپ + درگ</li>
+                <li><strong>جابجایی:</strong> کلیک راست + درگ</li>
+                <li><strong>زوم:</strong> اسکرول ماوس</li>
+                <li><strong>لمسی:</strong> پشتیبانی از تاچ</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>📦 بارگذاری</h3>
+            <p>OrbitControls جدا از Three.js اصلی است:</p>
+            <div class="code-block">
+                <code><span class="comment">&lt;!-- بعد از Three.js --&gt;</span>
+&lt;script src=<span class="string">"three/examples/js/controls/OrbitControls.js"</span>&gt;&lt;/script&gt;</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>⚙️ راه‌اندازی</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> controls = <span class="keyword">new</span> THREE.<span class="function">OrbitControls</span>(
+    camera,              <span class="comment">// دوربین</span>
+    renderer.domElement  <span class="comment">// المان رندرر</span>
+);
+
+<span class="comment">// حرکت نرم</span>
+controls.enableDamping = <span class="keyword">true</span>;
+controls.dampingFactor = <span class="number">0.05</span>;
+
+<span class="comment">// چرخش خودکار</span>
+controls.autoRotate = <span class="keyword">true</span>;
+controls.autoRotateSpeed = <span class="number">1</span>;</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔧 تنظیمات</h3>
+            <div class="code-block">
+                <code><span class="comment">// محدود کردن زوم</span>
+controls.minDistance = <span class="number">2</span>;
+controls.maxDistance = <span class="number">50</span>;
+
+<span class="comment">// محدود کردن زاویه عمودی</span>
+controls.minPolarAngle = <span class="number">0</span>;           <span class="comment">// بالا</span>
+controls.maxPolarAngle = Math.PI / <span class="number">2</span>; <span class="comment">// افق</span>
+
+<span class="comment">// غیرفعال کردن قابلیت‌ها</span>
+controls.enablePan = <span class="keyword">false</span>;
+controls.enableZoom = <span class="keyword">false</span>;</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔄 آپدیت</h3>
+            <p>برای Damping باید در حلقه انیمیشن آپدیت شود:</p>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">animate</span>() {
+    <span class="function">requestAnimationFrame</span>(animate);
+    
+    <span class="comment">// مهم! برای حرکت نرم</span>
+    controls.<span class="function">update</span>();
+    
+    renderer.<span class="function">render</span>(scene, camera);
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🏗️ GridHelper</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> gridHelper = <span class="keyword">new</span> THREE.<span class="function">GridHelper</span>(
+    <span class="number">20</span>,        <span class="comment">// اندازه</span>
+    <span class="number">20</span>,        <span class="comment">// تعداد تقسیمات</span>
+    <span class="number">0x00ced1</span>, <span class="comment">// رنگ مرکز</span>
+    <span class="number">0x1a3a4a</span>  <span class="comment">// رنگ شبکه</span>
+);
+scene.<span class="function">add</span>(gridHelper);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>💡 نکته</h3>
+            <div class="tip-box">
+                <p>🎓 OrbitControls برای نمایش محصولات 3D، ویوئرهای مدل و بازی‌های سه‌بعدی عالی است. همیشه enableDamping را فعال کنید تا حرکت نرم‌تر شود!</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="template2.html" class="nav-btn prev">→ درس قبلی</a>
+            <a href="template4.html" class="nav-btn next">درس بعدی ←</a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
+        function toggleTutorial() { document.getElementById('tutorialPanel').classList.toggle('open'); }
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0d1b2a);
         
@@ -58,14 +183,12 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
         
-        // OrbitControls
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.autoRotate = true;
         controls.autoRotateSpeed = 1;
         
-        // نورپردازی
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
         
@@ -73,11 +196,9 @@
         spotLight.position.set(10, 20, 10);
         scene.add(spotLight);
         
-        // شبکه کمکی
         const gridHelper = new THREE.GridHelper(20, 20, 0x00ced1, 0x1a3a4a);
         scene.add(gridHelper);
         
-        // ایجاد اشکال مختلف
         const colors = [0x00ced1, 0x48d1cc, 0x20b2aa, 0x008b8b, 0x40e0d0];
         
         for (let i = 0; i < 5; i++) {
@@ -85,8 +206,7 @@
                 const geometry = new THREE.BoxGeometry(0.8, Math.random() * 3 + 0.5, 0.8);
                 const material = new THREE.MeshStandardMaterial({ 
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    metalness: 0.5,
-                    roughness: 0.3
+                    metalness: 0.5, roughness: 0.3
                 });
                 const box = new THREE.Mesh(geometry, material);
                 box.position.set(i * 2 - 4, geometry.parameters.height / 2, j * 2 - 4);

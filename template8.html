@@ -10,64 +10,62 @@
     <link rel="stylesheet" href="style.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            background: #000;
-        }
+        body { font-family: "Vazirmatn", sans-serif; overflow-x: hidden; background: #000; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 16px;
-            z-index: 100;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            color: #fff; background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 20px;
+            font-size: 16px; z-index: 100; box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
         }
         .effects-panel {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            z-index: 100;
-            color: #fff;
+            position: absolute; top: 80px; right: 20px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            padding: 20px; border-radius: 15px; z-index: 100; color: #fff;
         }
-        .effects-panel h3 {
-            margin-bottom: 15px;
-            font-size: 14px;
-            opacity: 0.9;
+        .effects-panel h3 { margin-bottom: 15px; font-size: 14px; opacity: 0.9; }
+        .effect-toggle { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .effect-toggle input { margin-left: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .slider-container { margin-top: 15px; }
+        .slider-container label { display: block; margin-bottom: 5px; font-size: 12px; }
+        .slider-container input[type="range"] { width: 100%; }
+
+        .tutorial-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 1001;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s;
         }
-        .effect-toggle {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
+        .tutorial-toggle:hover { transform: scale(1.05); }
+
+        .tutorial-panel {
+            position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+            background: rgba(15, 15, 25, 0.95); backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 80px 25px 25px;
         }
-        .effect-toggle input {
-            margin-left: 10px;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        .slider-container {
-            margin-top: 15px;
-        }
-        .slider-container label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 12px;
-        }
-        .slider-container input[type="range"] {
-            width: 100%;
-        }
+        .tutorial-panel.open { right: 0; }
+        .tutorial-panel::-webkit-scrollbar { width: 6px; }
+        .tutorial-panel::-webkit-scrollbar-thumb { background: rgba(102, 126, 234, 0.5); border-radius: 3px; }
+
+        .tutorial-section { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+        .tutorial-section h3 { color: #818cf8; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tutorial-section p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+        .tutorial-section ul { color: rgba(255,255,255,0.7); font-size: 13px; line-height: 2; padding-right: 20px; }
+        .code-block { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin: 12px 0; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .code-block code { color: #a5d6ff; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; direction: ltr; text-align: left; display: block; white-space: pre; }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #c586c0; }
+        .code-block .function { color: #dcdcaa; }
+        .code-block .number { color: #b5cea8; }
+        .tip-box { background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1)); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 12px 15px; margin: 12px 0; }
+        .tip-box p { color: #a5b4fc; font-size: 13px; margin: 0; }
+        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-size: 13px; font-weight: 500; transition: all 0.3s; }
+        .nav-btn.prev { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn.next { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+        .nav-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -75,21 +73,109 @@
     
     <div class="effects-panel">
         <h3>تنظیمات افکت‌ها:</h3>
-        <label class="effect-toggle">
-            <input type="checkbox" id="bloomToggle" checked> افکت درخشش (Bloom)
-        </label>
-        <label class="effect-toggle">
-            <input type="checkbox" id="vignetteToggle"> افکت وینیت
-        </label>
-        <label class="effect-toggle">
-            <input type="checkbox" id="rgbShiftToggle"> افکت RGB Shift
-        </label>
+        <label class="effect-toggle"><input type="checkbox" id="bloomToggle" checked> افکت درخشش (Bloom)</label>
+        <label class="effect-toggle"><input type="checkbox" id="vignetteToggle"> افکت وینیت</label>
+        <label class="effect-toggle"><input type="checkbox" id="rgbShiftToggle"> افکت RGB Shift</label>
         <div class="slider-container">
             <label>شدت درخشش: <span id="bloomValue">1.5</span></label>
             <input type="range" id="bloomStrength" min="0" max="3" step="0.1" value="1.5">
         </div>
     </div>
     
+    <button class="tutorial-toggle" onclick="toggleTutorial()">📚 درسنامه</button>
+    
+    <div class="tutorial-panel" id="tutorialPanel">
+        <div class="tutorial-section">
+            <h3>📖 مقدمه</h3>
+            <p>Post-Processing افکت‌هایی است که بعد از رندر اصلی روی تصویر اعمال می‌شود. Bloom، Motion Blur، DOF و... از این نوع هستند.</p>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>📦 EffectComposer</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> composer = <span class="keyword">new</span> THREE.<span class="function">EffectComposer</span>(renderer);
+
+<span class="comment">// پاس رندر اصلی</span>
+<span class="keyword">const</span> renderPass = <span class="keyword">new</span> THREE.<span class="function">RenderPass</span>(scene, camera);
+composer.<span class="function">addPass</span>(renderPass);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>✨ Bloom Pass</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> bloomPass = <span class="keyword">new</span> THREE.<span class="function">UnrealBloomPass</span>(
+    <span class="keyword">new</span> THREE.<span class="function">Vector2</span>(width, height),
+    <span class="number">1.5</span>,   <span class="comment">// strength</span>
+    <span class="number">0.4</span>,   <span class="comment">// radius</span>
+    <span class="number">0.85</span>   <span class="comment">// threshold</span>
+);
+composer.<span class="function">addPass</span>(bloomPass);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🔧 Custom Shader Pass</h3>
+            <div class="code-block">
+                <code><span class="keyword">const</span> myShader = {
+    uniforms: {
+        tDiffuse: { value: <span class="keyword">null</span> },
+        amount: { value: <span class="number">0.5</span> }
+    },
+    vertexShader: <span class="string">`...`</span>,
+    fragmentShader: <span class="string">`
+        uniform sampler2D tDiffuse;
+        uniform float amount;
+        varying vec2 vUv;
+        void main() {
+            vec4 color = texture2D(tDiffuse, vUv);
+            gl_FragColor = color;
+        }
+    `</span>
+};
+
+<span class="keyword">const</span> shaderPass = <span class="keyword">new</span> THREE.<span class="function">ShaderPass</span>(myShader);
+composer.<span class="function">addPass</span>(shaderPass);</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🎬 رندر کردن</h3>
+            <div class="code-block">
+                <code><span class="keyword">function</span> <span class="function">animate</span>() {
+    <span class="function">requestAnimationFrame</span>(animate);
+    
+    <span class="comment">// به جای renderer.render</span>
+    composer.<span class="function">render</span>();
+}</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>🌟 Emissive Material</h3>
+            <p>برای درخشش بهتر از emissive استفاده کنید:</p>
+            <div class="code-block">
+                <code><span class="keyword">const</span> material = <span class="keyword">new</span> THREE.<span class="function">MeshStandardMaterial</span>({
+    color: <span class="number">0x667eea</span>,
+    emissive: <span class="number">0x667eea</span>,
+    emissiveIntensity: <span class="number">0.5</span>
+});</code>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <h3>💡 نکته</h3>
+            <div class="tip-box">
+                <p>🎓 پنل سمت چپ را امتحان کنید! می‌توانید افکت‌ها را فعال/غیرفعال کنید و شدت Bloom را تنظیم کنید.</p>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="template7.html" class="nav-btn prev">→ درس قبلی</a>
+            <a href="template9.html" class="nav-btn next">درس بعدی ←</a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
@@ -99,6 +185,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
     <script>
+        function toggleTutorial() { document.getElementById('tutorialPanel').classList.toggle('open'); }
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0a0a1a);
         
@@ -116,186 +204,73 @@
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.5;
         
-        // نورپردازی
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
-        
         const pointLight1 = new THREE.PointLight(0x667eea, 2, 100);
         pointLight1.position.set(5, 5, 5);
         scene.add(pointLight1);
-        
         const pointLight2 = new THREE.PointLight(0x764ba2, 2, 100);
         pointLight2.position.set(-5, 5, -5);
         scene.add(pointLight2);
         
-        // ایجاد اشکال درخشان
-        const glowMaterial = new THREE.MeshStandardMaterial({
-            color: 0x667eea,
-            emissive: 0x667eea,
-            emissiveIntensity: 0.5,
-            metalness: 0.8,
-            roughness: 0.2
-        });
-        
         const objects = [];
         
-        // کره مرکزی
-        const centerSphere = new THREE.Mesh(
-            new THREE.SphereGeometry(1.2, 32, 32),
-            new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                emissive: 0x764ba2,
-                emissiveIntensity: 0.8,
-                metalness: 0.9,
-                roughness: 0.1
-            })
-        );
+        const centerSphere = new THREE.Mesh(new THREE.SphereGeometry(1.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x764ba2, emissiveIntensity: 0.8, metalness: 0.9, roughness: 0.1 }));
         scene.add(centerSphere);
         objects.push(centerSphere);
         
-        // حلقه‌های اطراف
         for (let i = 0; i < 3; i++) {
-            const torus = new THREE.Mesh(
-                new THREE.TorusGeometry(2 + i * 0.5, 0.05, 16, 100),
-                new THREE.MeshStandardMaterial({
-                    color: 0x667eea,
-                    emissive: 0x667eea,
-                    emissiveIntensity: 0.6
-                })
-            );
+            const torus = new THREE.Mesh(new THREE.TorusGeometry(2 + i * 0.5, 0.05, 16, 100), new THREE.MeshStandardMaterial({ color: 0x667eea, emissive: 0x667eea, emissiveIntensity: 0.6 }));
             torus.rotation.x = Math.PI / 2 + i * 0.3;
             torus.rotation.y = i * 0.5;
             scene.add(torus);
             objects.push(torus);
         }
         
-        // کره‌های کوچک اطراف
         for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
-            const smallSphere = new THREE.Mesh(
-                new THREE.SphereGeometry(0.2, 16, 16),
-                new THREE.MeshStandardMaterial({
-                    color: 0x00ff88,
-                    emissive: 0x00ff88,
-                    emissiveIntensity: 0.8
-                })
-            );
-            smallSphere.position.set(
-                Math.cos(angle) * 3,
-                Math.sin(angle * 2) * 0.5,
-                Math.sin(angle) * 3
-            );
+            const smallSphere = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 0.8 }));
+            smallSphere.position.set(Math.cos(angle) * 3, Math.sin(angle * 2) * 0.5, Math.sin(angle) * 3);
             scene.add(smallSphere);
             objects.push(smallSphere);
         }
         
-        // Post-Processing
         const composer = new THREE.EffectComposer(renderer);
-        
         const renderPass = new THREE.RenderPass(scene, camera);
         composer.addPass(renderPass);
         
-        const bloomPass = new THREE.UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5,
-            0.4,
-            0.85
-        );
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
         composer.addPass(bloomPass);
         
-        // Vignette Shader
         const vignetteShader = {
-            uniforms: {
-                tDiffuse: { value: null },
-                offset: { value: 1.0 },
-                darkness: { value: 1.0 }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform sampler2D tDiffuse;
-                uniform float offset;
-                uniform float darkness;
-                varying vec2 vUv;
-                void main() {
-                    vec4 color = texture2D(tDiffuse, vUv);
-                    vec2 uv = (vUv - vec2(0.5)) * vec2(offset);
-                    float vignette = clamp(1.0 - dot(uv, uv), 0.0, 1.0);
-                    color.rgb = mix(color.rgb, color.rgb * vignette, darkness);
-                    gl_FragColor = color;
-                }
-            `
+            uniforms: { tDiffuse: { value: null }, offset: { value: 1.0 }, darkness: { value: 1.0 } },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `uniform sampler2D tDiffuse; uniform float offset; uniform float darkness; varying vec2 vUv; void main() { vec4 color = texture2D(tDiffuse, vUv); vec2 uv = (vUv - vec2(0.5)) * vec2(offset); float vignette = clamp(1.0 - dot(uv, uv), 0.0, 1.0); color.rgb = mix(color.rgb, color.rgb * vignette, darkness); gl_FragColor = color; }`
         };
-        
         const vignettePass = new THREE.ShaderPass(vignetteShader);
         vignettePass.enabled = false;
         composer.addPass(vignettePass);
         
-        // RGB Shift Shader
         const rgbShiftShader = {
-            uniforms: {
-                tDiffuse: { value: null },
-                amount: { value: 0.005 }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform sampler2D tDiffuse;
-                uniform float amount;
-                varying vec2 vUv;
-                void main() {
-                    vec2 offset = amount * vec2(cos(vUv.y * 20.0), sin(vUv.x * 20.0));
-                    vec4 cr = texture2D(tDiffuse, vUv + offset);
-                    vec4 cg = texture2D(tDiffuse, vUv);
-                    vec4 cb = texture2D(tDiffuse, vUv - offset);
-                    gl_FragColor = vec4(cr.r, cg.g, cb.b, cg.a);
-                }
-            `
+            uniforms: { tDiffuse: { value: null }, amount: { value: 0.005 } },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `uniform sampler2D tDiffuse; uniform float amount; varying vec2 vUv; void main() { vec2 offset = amount * vec2(cos(vUv.y * 20.0), sin(vUv.x * 20.0)); vec4 cr = texture2D(tDiffuse, vUv + offset); vec4 cg = texture2D(tDiffuse, vUv); vec4 cb = texture2D(tDiffuse, vUv - offset); gl_FragColor = vec4(cr.r, cg.g, cb.b, cg.a); }`
         };
-        
         const rgbShiftPass = new THREE.ShaderPass(rgbShiftShader);
         rgbShiftPass.enabled = false;
         composer.addPass(rgbShiftPass);
         
-        // Event Listeners
-        document.getElementById('bloomToggle').addEventListener('change', (e) => {
-            bloomPass.enabled = e.target.checked;
-        });
-        
-        document.getElementById('vignetteToggle').addEventListener('change', (e) => {
-            vignettePass.enabled = e.target.checked;
-        });
-        
-        document.getElementById('rgbShiftToggle').addEventListener('change', (e) => {
-            rgbShiftPass.enabled = e.target.checked;
-        });
-        
-        document.getElementById('bloomStrength').addEventListener('input', (e) => {
-            bloomPass.strength = parseFloat(e.target.value);
-            document.getElementById('bloomValue').textContent = e.target.value;
-        });
+        document.getElementById('bloomToggle').addEventListener('change', (e) => { bloomPass.enabled = e.target.checked; });
+        document.getElementById('vignetteToggle').addEventListener('change', (e) => { vignettePass.enabled = e.target.checked; });
+        document.getElementById('rgbShiftToggle').addEventListener('change', (e) => { rgbShiftPass.enabled = e.target.checked; });
+        document.getElementById('bloomStrength').addEventListener('input', (e) => { bloomPass.strength = parseFloat(e.target.value); document.getElementById('bloomValue').textContent = e.target.value; });
         
         function animate() {
             requestAnimationFrame(animate);
-            
             const time = Date.now() * 0.001;
-            
             centerSphere.rotation.y = time * 0.5;
-            
             objects.forEach((obj, i) => {
-                if (i > 0 && i <= 3) {
-                    obj.rotation.z = time * (0.3 + i * 0.1);
-                }
+                if (i > 0 && i <= 3) obj.rotation.z = time * (0.3 + i * 0.1);
                 if (i > 3) {
                     const angle = (i - 4) / 8 * Math.PI * 2 + time * 0.5;
                     obj.position.x = Math.cos(angle) * 3;
@@ -303,7 +278,6 @@
                     obj.position.y = Math.sin(time * 2 + i) * 0.5;
                 }
             });
-            
             controls.update();
             composer.render();
         }
