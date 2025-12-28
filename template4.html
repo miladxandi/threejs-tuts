@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js - تکسچر و متریال</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.85), rgba(238, 90, 36, 0.85));
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 16px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">🎨 قالب ۴: تکسچر و متریال</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a1a);
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 8);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+        
+        // نورپردازی
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 5);
+        scene.add(directionalLight);
+        
+        // ایجاد تکسچر با Canvas
+        function createCanvasTexture(color1, color2, pattern) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = color1;
+            ctx.fillRect(0, 0, 256, 256);
+            
+            ctx.fillStyle = color2;
+            if (pattern === 'checker') {
+                for (let i = 0; i < 8; i++) {
+                    for (let j = 0; j < 8; j++) {
+                        if ((i + j) % 2 === 0) {
+                            ctx.fillRect(i * 32, j * 32, 32, 32);
+                        }
+                    }
+                }
+            } else if (pattern === 'stripes') {
+                for (let i = 0; i < 16; i++) {
+                    if (i % 2 === 0) {
+                        ctx.fillRect(0, i * 16, 256, 16);
+                    }
+                }
+            } else if (pattern === 'dots') {
+                for (let i = 0; i < 8; i++) {
+                    for (let j = 0; j < 8; j++) {
+                        ctx.beginPath();
+                        ctx.arc(i * 32 + 16, j * 32 + 16, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            return texture;
+        }
+        
+        // کره با متریال متالیک
+        const sphere1 = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 32, 32),
+            new THREE.MeshStandardMaterial({ 
+                color: 0xff6b6b, 
+                metalness: 0.9, 
+                roughness: 0.1 
+            })
+        );
+        sphere1.position.set(-3, 0, 0);
+        scene.add(sphere1);
+        
+        // مکعب با تکسچر شطرنجی
+        const cube = new THREE.Mesh(
+            new THREE.BoxGeometry(1.5, 1.5, 1.5),
+            new THREE.MeshStandardMaterial({ 
+                map: createCanvasTexture('#ff6b6b', '#2a2a4a', 'checker'),
+                metalness: 0.2,
+                roughness: 0.8
+            })
+        );
+        cube.position.set(0, 0, 0);
+        scene.add(cube);
+        
+        // دونات با تکسچر راه‌راه
+        const torus = new THREE.Mesh(
+            new THREE.TorusGeometry(0.8, 0.35, 16, 100),
+            new THREE.MeshStandardMaterial({ 
+                map: createCanvasTexture('#6bff6b', '#1a3a1a', 'stripes'),
+                metalness: 0.3,
+                roughness: 0.6
+            })
+        );
+        torus.position.set(3, 0, 0);
+        scene.add(torus);
+        
+        // کره شیشه‌ای
+        const glassSphere = new THREE.Mesh(
+            new THREE.SphereGeometry(0.8, 32, 32),
+            new THREE.MeshPhysicalMaterial({
+                color: 0x88ccff,
+                metalness: 0,
+                roughness: 0,
+                transmission: 0.9,
+                thickness: 0.5
+            })
+        );
+        glassSphere.position.set(0, 2, 0);
+        scene.add(glassSphere);
+        
+        const objects = [sphere1, cube, torus, glassSphere];
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            objects.forEach((obj, i) => {
+                obj.rotation.y += 0.01;
+                obj.position.y = Math.sin(Date.now() * 0.001 + i) * 0.2 + (i === 3 ? 2 : 0);
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        animate();
+    </script>
+</body>
+</html>

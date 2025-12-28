@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js - هواپیما با پرچم ایران</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Vazirmatn", sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: linear-gradient(135deg, rgba(0, 150, 57, 0.9), rgba(218, 0, 0, 0.9));
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 16px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">✈️ قالب ۱۰: هواپیما با پرچم ایران 🇮🇷</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        
+        // آسمان گرادیانت
+        const skyGeometry = new THREE.SphereGeometry(500, 32, 32);
+        const skyMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                topColor: { value: new THREE.Color(0x0077ff) },
+                bottomColor: { value: new THREE.Color(0x89cff0) }
+            },
+            vertexShader: `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 topColor;
+                uniform vec3 bottomColor;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float h = normalize(vWorldPosition).y;
+                    gl_FragColor = vec4(mix(bottomColor, topColor, max(h, 0.0)), 1.0);
+                }
+            `,
+            side: THREE.BackSide
+        });
+        const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+        scene.add(sky);
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(15, 5, 15);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+        
+        // نورپردازی
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        sunLight.position.set(50, 50, 50);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
+        
+        // ایجاد هواپیما
+        function createAirplane() {
+            const airplane = new THREE.Group();
+            
+            // بدنه اصلی
+            const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8, 16);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.rotation.z = Math.PI / 2;
+            body.castShadow = true;
+            airplane.add(body);
+            
+            // دماغه
+            const noseGeometry = new THREE.ConeGeometry(0.5, 1.5, 16);
+            const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.5, roughness: 0.3 });
+            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+            nose.rotation.z = -Math.PI / 2;
+            nose.position.x = 4.7;
+            nose.castShadow = true;
+            airplane.add(nose);
+            
+            // دم
+            const tailGeometry = new THREE.ConeGeometry(0.5, 2, 16);
+            const tail = new THREE.Mesh(tailGeometry, bodyMaterial);
+            tail.rotation.z = Math.PI / 2;
+            tail.position.x = -5;
+            tail.castShadow = true;
+            airplane.add(tail);
+            
+            // باله عمودی دم
+            const verticalTailGeometry = new THREE.BoxGeometry(1.5, 2, 0.1);
+            const tailMaterial = new THREE.MeshStandardMaterial({ color: 0xda0000 });
+            const verticalTail = new THREE.Mesh(verticalTailGeometry, tailMaterial);
+            verticalTail.position.set(-4.5, 1, 0);
+            verticalTail.rotation.z = -0.3;
+            verticalTail.castShadow = true;
+            airplane.add(verticalTail);
+            
+            // باله‌های افقی دم
+            const horizontalTailGeometry = new THREE.BoxGeometry(1, 0.1, 3);
+            const horizontalTailMaterial = new THREE.MeshStandardMaterial({ color: 0x009639 });
+            const horizontalTail = new THREE.Mesh(horizontalTailGeometry, horizontalTailMaterial);
+            horizontalTail.position.set(-4.5, 0, 0);
+            horizontalTail.castShadow = true;
+            airplane.add(horizontalTail);
+            
+            // بال‌های اصلی
+            const wingGeometry = new THREE.BoxGeometry(2, 0.15, 10);
+            const wingMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.3, roughness: 0.4 });
+            const wings = new THREE.Mesh(wingGeometry, wingMaterial);
+            wings.position.set(0, 0, 0);
+            wings.castShadow = true;
+            airplane.add(wings);
+            
+            // موتورها
+            const engineGeometry = new THREE.CylinderGeometry(0.35, 0.4, 1.5, 16);
+            const engineMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.7, roughness: 0.3 });
+            
+            const engine1 = new THREE.Mesh(engineGeometry, engineMaterial);
+            engine1.rotation.z = Math.PI / 2;
+            engine1.position.set(0.5, -0.3, 2.5);
+            engine1.castShadow = true;
+            airplane.add(engine1);
+            
+            const engine2 = new THREE.Mesh(engineGeometry, engineMaterial);
+            engine2.rotation.z = Math.PI / 2;
+            engine2.position.set(0.5, -0.3, -2.5);
+            engine2.castShadow = true;
+            airplane.add(engine2);
+            
+            // کابین خلبان
+            const cockpitGeometry = new THREE.SphereGeometry(0.45, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+            const cockpitMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x88ccff, 
+                transparent: true, 
+                opacity: 0.7,
+                metalness: 0.3,
+                roughness: 0.1
+            });
+            const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
+            cockpit.position.set(3, 0.4, 0);
+            cockpit.rotation.z = -Math.PI / 2;
+            airplane.add(cockpit);
+            
+            // پنجره‌ها
+            const windowMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x88ccff, 
+                emissive: 0x88ccff, 
+                emissiveIntensity: 0.2 
+            });
+            for (let i = 0; i < 6; i++) {
+                const windowGeometry = new THREE.CircleGeometry(0.12, 16);
+                const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+                windowMesh.position.set(1.5 - i * 0.7, 0.3, 0.51);
+                airplane.add(windowMesh);
+                
+                const windowMesh2 = windowMesh.clone();
+                windowMesh2.position.z = -0.51;
+                windowMesh2.rotation.y = Math.PI;
+                airplane.add(windowMesh2);
+            }
+            
+            return airplane;
+        }
+        
+        // ایجاد پرچم ایران
+        function createIranFlag() {
+            const flagGroup = new THREE.Group();
+            
+            // طناب/ریسمان
+            const ropeGeometry = new THREE.CylinderGeometry(0.02, 0.02, 8, 8);
+            const ropeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+            const rope = new THREE.Mesh(ropeGeometry, ropeMaterial);
+            rope.rotation.z = Math.PI / 2;
+            rope.position.x = -4;
+            flagGroup.add(rope);
+            
+            // پرچم
+            const flagWidth = 6;
+            const flagHeight = 3.6;
+            const segmentsW = 30;
+            const segmentsH = 18;
+            
+            const flagGeometry = new THREE.PlaneGeometry(flagWidth, flagHeight, segmentsW, segmentsH);
+            
+            // ایجاد تکسچر پرچم ایران با Canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 307;
+            const ctx = canvas.getContext('2d');
+            
+            // سبز
+            ctx.fillStyle = '#009639';
+            ctx.fillRect(0, 0, 512, 102);
+            
+            // سفید
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 102, 512, 103);
+            
+            // قرمز
+            ctx.fillStyle = '#da0000';
+            ctx.fillRect(0, 205, 512, 102);
+            
+            // نوشته الله اکبر روی نوار سبز و قرمز
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Arial';
+            for (let i = 0; i < 11; i++) {
+                ctx.fillText('الله اکبر', 10 + i * 46, 98);
+            }
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 11; i++) {
+                ctx.fillText('الله اکبر', 10 + i * 46, 220);
+            }
+            
+            // نشان وسط (الله ساده شده)
+            ctx.fillStyle = '#da0000';
+            ctx.beginPath();
+            ctx.arc(256, 153, 35, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('الله', 256, 168);
+            
+            const flagTexture = new THREE.CanvasTexture(canvas);
+            flagTexture.wrapS = THREE.ClampToEdgeWrapping;
+            flagTexture.wrapT = THREE.ClampToEdgeWrapping;
+            
+            const flagMaterial = new THREE.MeshStandardMaterial({
+                map: flagTexture,
+                side: THREE.DoubleSide,
+                transparent: false
+            });
+            
+            const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+            flag.position.set(-8, 0, 0);
+            flag.userData = { geometry: flagGeometry, time: 0 };
+            flagGroup.add(flag);
+            
+            return flagGroup;
+        }
+        
+        const airplane = createAirplane();
+        airplane.position.set(0, 0, 0);
+        scene.add(airplane);
+        
+        const flagGroup = createIranFlag();
+        flagGroup.position.set(-6, 0, 0);
+        airplane.add(flagGroup);
+        
+        // ابرها
+        function createCloud(x, y, z) {
+            const group = new THREE.Group();
+            const cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true });
+            
+            for (let i = 0; i < 6; i++) {
+                const size = 1 + Math.random() * 2;
+                const cloudPart = new THREE.Mesh(
+                    new THREE.SphereGeometry(size, 8, 8),
+                    cloudMaterial
+                );
+                cloudPart.position.set(
+                    (Math.random() - 0.5) * 5,
+                    (Math.random() - 0.5) * 1,
+                    (Math.random() - 0.5) * 3
+                );
+                group.add(cloudPart);
+            }
+            
+            group.position.set(x, y, z);
+            scene.add(group);
+            return group;
+        }
+        
+        const clouds = [];
+        for (let i = 0; i < 15; i++) {
+            const cloud = createCloud(
+                Math.random() * 200 - 100,
+                Math.random() * 30 - 20,
+                Math.random() * 200 - 100
+            );
+            clouds.push(cloud);
+        }
+        
+        // انیمیشن پرچم (موج‌دار)
+        function animateFlag(flag, time) {
+            const geometry = flag.userData.geometry;
+            const positions = geometry.attributes.position;
+            
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                
+                // ایجاد موج
+                const waveX = Math.sin(x * 2 + time * 3) * 0.3;
+                const waveY = Math.sin(x * 1.5 + time * 2.5) * 0.15;
+                const waveZ = Math.sin(x * 2.5 + time * 4) * 0.2 * (1 + x * 0.2);
+                
+                positions.setZ(i, waveZ);
+            }
+            
+            positions.needsUpdate = true;
+            geometry.computeVertexNormals();
+        }
+        
+        let time = 0;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            time += 0.016;
+            
+            // حرکت هواپیما
+            airplane.position.x = Math.sin(time * 0.3) * 5;
+            airplane.position.y = Math.sin(time * 0.5) * 2;
+            airplane.rotation.z = Math.sin(time * 0.5) * 0.05;
+            airplane.rotation.x = Math.sin(time * 0.3) * 0.03;
+            
+            // انیمیشن پرچم
+            const flag = flagGroup.children[1];
+            if (flag && flag.userData) {
+                flag.userData.time = time;
+                animateFlag(flag, time);
+            }
+            
+            // حرکت ابرها
+            clouds.forEach((cloud, i) => {
+                cloud.position.x -= 0.1 + i * 0.01;
+                if (cloud.position.x < -100) cloud.position.x = 100;
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        animate();
+    </script>
+</body>
+</html>
+
